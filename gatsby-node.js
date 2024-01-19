@@ -235,3 +235,19 @@ async function getProjects({ graphql, reporter }) {
 
  return graphqlResult.data.allWpProperty.edges
 }
+
+//Fixing error in Isotope grid
+exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => { 
+  if (stage === 'build-html') { 
+    actions.setWebpackConfig({ 
+      module: { 
+        rules: [ 
+          { 
+            test: /isotope-layout/, 
+            use: loaders.null(), 
+          }, 
+        ], 
+      }, 
+    }); 
+  } 
+}; 
