@@ -26,12 +26,11 @@ const MainNav = styled.nav`
         margin-bottom: 0;
         margin-top: 0px;
         > li {
-            color: #4c5166;
-            font-family: 'Calibri', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            line-height: 4;
-            letter-spacing: 1px;
+            color: #000;
+            font-family: 'Carlito', sans-serif;
+            font-weight: 400;
+            font-size: 24px;
+            line-height: 1;
             padding-right: 35px;
             margin-bottom: 0;
             position: relative;
@@ -40,11 +39,8 @@ const MainNav = styled.nav`
                 padding-right: 0;
             }
             a {
-                color: #4c5166;
-                font-family: 'Calibri', sans-serif;
-                font-weight: 700;
-                font-size: 14px;
-                letter-spacing: 1px;
+                color: #000;
+                font-family: 'Carlito', sans-serif;
                 font-style: normal;
                 text-decoration: none;
             }
@@ -58,7 +54,7 @@ const MainNav = styled.nav`
                 width: 240px;
                 margin: 0;
                 background-color: #f2efef;
-                font-family: 'Calibri', sans-serif;
+                font-family: 'Carlito', sans-serif;
                 font-weight: 500;
                 letter-spacing: 0px;
                 font-style: normal;
@@ -71,7 +67,7 @@ const MainNav = styled.nav`
                     a {
                         display: block;
                         width: 100%;
-                        font-family: 'Calibri', sans-serif;
+                        font-family: 'Carlito', sans-serif;
                         font-weight: 500;
                         padding: 7px 20px;
                         border-bottom-color: #dcdadb;

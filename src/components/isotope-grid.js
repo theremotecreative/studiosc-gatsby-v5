@@ -82,8 +82,8 @@ const IsoGrid = () => {
               <li onClick={handleFilterKeyChange('development')}>Development</li>
               <li onClick={handleFilterKeyChange('residential')}>Residential</li>
               <li onClick={handleFilterKeyChange('office')}>Office</li>
-              <li onClick={handleFilterKeyChange('commercial')}>Commercial</li>
               <li onClick={handleFilterKeyChange('adaptive-reuse')}>Adaptive Reuse</li>
+              <li onClick={handleFilterKeyChange('commerce')}>Commerce</li>
             </ul>
             <ul className="filter-container">
 
@@ -125,12 +125,10 @@ const GridMain = styled.section`
     z-index: 4;
     li {
       color: #4c5166;
-      font-family: 'Calibri', sans-serif;
+      font-family: 'Carlito', sans-serif;
       font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 1px;
+      font-size: 17px;
       padding-left: 20px;
-      text-transform: lowercase;
       margin: 0;
       line-height: 3;
       &:hover {
@@ -189,7 +187,7 @@ const GridMain = styled.section`
       transition-duration: .5s;
     }
     h3 {
-      font-family: 'Calibri', sans-serif;
+      font-family: 'Pathway Gothic One',sans-serif;
       text-align: center;
       font-size: 30px;
       letter-spacing: 1.5px;
@@ -197,9 +195,9 @@ const GridMain = styled.section`
       text-transform: uppercase;
     }
     p {
-      font-family: 'Calibri', sans-serif;
+      font-family: 'Pathway Gothic One',sans-serif;
       text-align: center;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 400;
     }
     &:hover {
