@@ -69,18 +69,7 @@ module.exports = {
      * if you're curious about it.
      */
     `gatsby-transformer-sharp`,
-    {
-      resolve: `gatsby-plugin-sharp`,
-      options: {
-        defaults: {
-          formats: [`auto`, `webp`],
-          placeholder: `dominantColor`,
-          quality: 100,
-          breakpoints: [750, 1080, 1366, 4000],
-          backgroundColor: `transparent`,
-        }
-      }
-    },
+    `gatsby-plugin-sharp`,
     `gatsby-plugin-image`,
     `gatsby-plugin-styled-components`,
     `gatsby-plugin-smoothscroll`,
