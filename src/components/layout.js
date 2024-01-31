@@ -104,6 +104,14 @@ const Main = styled.div`
                 }
             }
         }
+        header {
+            position: absolute;
+            z-index: 10;
+            background: #fff;
+        }
+        footer {
+            display: none;
+        }
     }
     @media(max-width:767px) {
         &.is-homepage {

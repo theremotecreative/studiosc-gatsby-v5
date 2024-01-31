@@ -6,7 +6,7 @@ import { GatsbyImage } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
-const IndexPage = ({ data: { queryContent, mobileImage } }) => {
+const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
 
     return(
         <Layout isHomePage>
@@ -16,7 +16,7 @@ const IndexPage = ({ data: { queryContent, mobileImage } }) => {
             metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
             />
             <DesktopImage>
-                <GatsbyImage image={queryContent.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={queryContent.featuredImage.node.title} />
+                <GatsbyImage image={featuredImage.childImageSharp.gatsbyImageData} alt={'StudiosC - Architecture Studio based in Brooklyn, NY'} />
             </DesktopImage>
             <MobileImage>
                 <GatsbyImage image={mobileImage.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={mobileImage.featuredImage.node.title} />
@@ -27,14 +27,17 @@ const IndexPage = ({ data: { queryContent, mobileImage } }) => {
 }
 
 const DesktopImage = styled.div`
-    height: calc(100vh - 96px);
+    height: 100vh;
+    width: 100%;
 
     .gatsby-image-wrapper {
-        height: calc(100vh - 96px);
+        height: 100vh;
+        width: 100%;
     }
 
     img {
-        height: calc(100vh - 96px);
+        height: 100vh;
+        width: 100%;
         object-fit: cover;
         object-position: center;
     }
@@ -46,7 +49,6 @@ const DesktopImage = styled.div`
 
 const MobileImage = styled.div`
     display: none;
-
     height: 100vh;
 
     .gatsby-image-wrapper {
@@ -68,6 +70,15 @@ export default IndexPage
 
 export const pageQuery = graphql`
     query {
+        featuredImage: file(relativePath: { eq: "home-sep2023.jpg" }) {
+            childImageSharp {
+              gatsbyImageData (
+                width: 4000
+                quality: 100
+                formats: [AUTO, WEBP, AVIF]
+              )
+            }
+          }
         queryContent: wpPage(databaseId: {eq: 224}) {
             seo {
                 title
@@ -82,20 +93,6 @@ export const pageQuery = graphql`
                   }
                 }
             }
-            featuredImage {
-                node {
-                  title
-                  localFile {
-                    childImageSharp {
-                      gatsbyImageData(
-                        quality: 100
-                        placeholder: BLURRED
-                        layout: FULL_WIDTH
-                      )
-                    }
-                  }
-                }
-              }
         }
         mobileImage: wpHomeSection(databaseId: {eq: 1318}) {
             featuredImage {

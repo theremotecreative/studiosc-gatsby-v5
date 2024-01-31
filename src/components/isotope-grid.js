@@ -56,7 +56,6 @@ const IsoGrid = () => {
                       childImageSharp {
                         gatsbyImageData (
                             width: 800
-                            placeholder: TRACED_SVG
                             formats: [AUTO, WEBP, AVIF]
                         )
                       }
