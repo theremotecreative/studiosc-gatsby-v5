@@ -58,6 +58,7 @@ module.exports = {
           `Roboto\:300,400,500,700`,
           `Carlito:400,400i,700,700i`,
           `Pathway Gothic One:400`,
+          `Lato:400`,
         ],
         display: 'swap'
       },

@@ -89,10 +89,11 @@ const ProjectTemplate = ({ data: { post } }) => {
 
 
 const ProjectMain = styled.div`
-    max-width: 1060px;
+    max-width: 1230px;
     width: 100%;
     padding: 0 50px;
     margin: 50px auto;
+    margin-top: 0;
     .slider-container {
         .slick-prev {
             width: 30px;
@@ -122,6 +123,9 @@ const ProjectMain = styled.div`
                 display: none;
             }
         }
+        .gatsby-image-wrapper {
+            width: 100%;
+        }
     }
     .project-title {
         width: 100%;
@@ -145,7 +149,7 @@ const ProjectMain = styled.div`
             font-family: 'Roboto', sans-serif;
             font-weight: 400;
             text-transform: uppercase;
-            font-size: 2em;
+            font-size: 26px;
             padding: 30px;
             max-width: 100%;
             margin: 0;
@@ -207,8 +211,8 @@ const ProjectMain = styled.div`
             width: 66.66%;
             padding-left: 20px;
             p {
-                font-family: Roboto;
-                font-size: 14px;
+                font-family: 'Lato', sans-serif;
+                font-size: 13px;
             }
         }
     }
@@ -278,7 +282,7 @@ export const pageQuery = graphql`
           localFile {
             childImageSharp {
                 gatsbyImageData (
-                    width: 960
+                    width: 1130
                     placeholder: BLURRED
                     formats: [AUTO, WEBP, AVIF]
                 )

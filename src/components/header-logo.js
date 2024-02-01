@@ -8,7 +8,7 @@ const HeaderLogo = () => {
       placeholderImage: file(relativePath: { eq: "logo-square.png" }) {
         childImageSharp {
           gatsbyImageData (
-              width: 75
+              width: 70
               placeholder: BLURRED
               formats: [AUTO, WEBP, AVIF]
           )

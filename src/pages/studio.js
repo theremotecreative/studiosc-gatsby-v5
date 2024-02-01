@@ -187,7 +187,7 @@ const TeamSection = styled.section`
     justify-content: space-around;
     align-items: flex-start;
     .team-member {
-        width: calc(25% - 30px);
+        width: calc(33.33% - 30px);
         .gatsby-image-wrapper {
             height: 350px;
             margin-bottom: 10px;
