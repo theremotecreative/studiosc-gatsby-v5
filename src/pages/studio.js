@@ -1,14 +1,18 @@
 import React from "react"
 import { graphql } from 'gatsby'
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components'
+import scrollTo from 'gatsby-plugin-smoothscroll';
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import StudioSlider from "../components/studio-slider"
+import StudioMap from "../components/google-map"
 
-const StudioPage = ({ data: { pageContent, sliderContent, teamContent } }) => {
+const StudioPage = ({ data: { pageContent, sliderContent, markerImage, teamContent } }) => {
 
     const teamMap = teamContent.edges
+    const markerImageSrc = getImage(markerImage);
 
     return(
         <Layout>
@@ -17,15 +21,21 @@ const StudioPage = ({ data: { pageContent, sliderContent, teamContent } }) => {
             description={pageContent.seo.metaDesc}
             metaImage={pageContent.seo.opengraphImage.localFile.childImageSharp.fluid}
             />
-            <ProfileSection>
-                <div class="studio-image">
-                    <GatsbyImage image={pageContent.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={pageContent.featuredImage.node.title} />
-                </div>
-                <div class="content" dangerouslySetInnerHTML={{ __html: pageContent.content }} />
+            <AnchorLinks>
+                <button onClick={() => scrollTo('#profile_section')}>Profile</button>
+                <button onClick={() => scrollTo('#contact_section')}>Contact</button>
+                <button onClick={() => scrollTo('#team_section')}>People</button>
+            </AnchorLinks>
+            <ProfileSection id="profile_section">
+                <StudioSlider sliderContent={sliderContent.edges} />
+                <div className="content" dangerouslySetInnerHTML={{ __html: pageContent.content }} />
             </ProfileSection>
-            <TeamSection>
+            <div id="contact_section">
+                <StudioMap markerImage={markerImageSrc} />
+            </div>
+            <TeamSection id="team_section">
                 {teamMap.map(teamSrc => (
-                    <div class="team-member">
+                    <div className="team-member">
                         <GatsbyImage className={"team-background"} image={teamSrc.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={teamSrc.node.featuredImage.node.title} />
                         <h3>{teamSrc.node.title}</h3>
                         <div dangerouslySetInnerHTML={{ __html: teamSrc.node.content }} />
@@ -37,8 +47,34 @@ const StudioPage = ({ data: { pageContent, sliderContent, teamContent } }) => {
 
 }
 
+const AnchorLinks = styled.div`
+    position: absolute;
+    z-index: 10;
+    top: 80px;
+    width: 100%;
+    padding: 0 50px;
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+        font-family: 'Carlito', sans-serif;
+        font-size: 18px;
+        color: #474747;
+        background: none;
+        border: none;
+        padding-right: 0;
+        padding-left: 30px;
+
+        &:hover {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+    }
+`
+
 const ProfileSection = styled.section`
-    max-width: 1260px;
+    max-width: 1220px;
     width: 100%;
     padding: 0 50px;
     margin: 50px auto;
@@ -84,7 +120,7 @@ const ProfileSection = styled.section`
         .slick-next {
             width: 30px;
             height: 30px;
-            right: -230px;
+            right: -200px;
             border-top: 6px solid #fff;
             border-right: 6px solid #fff;
             transform: rotate(45deg);
@@ -178,16 +214,17 @@ const ProfileSection = styled.section`
 `
 
 const TeamSection = styled.section`
-    max-width: 1260px;
+    max-width: 1220px;
     width: 100%;
     padding: 0 50px;
+    padding-top: 100px;
     margin: 50px auto;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: flex-start;
     .team-member {
-        width: calc(33.33% - 30px);
+        width: calc(33.33% - 20px);
         .gatsby-image-wrapper {
             height: 350px;
             margin-bottom: 10px;
@@ -280,6 +317,11 @@ export const pageQuery = graphql`
                   }
                 }
               }
+            }
+          }
+        markerImage: file(relativePath: { eq: "logo-blue-circle.png" }) {
+            childImageSharp {
+              gatsbyImageData(width: 50, layout: CONSTRAINED)
             }
           }
         teamContent: allWpTeamMember(sort: {fields: date, order: DESC}) {

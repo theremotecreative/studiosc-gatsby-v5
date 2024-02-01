@@ -76,7 +76,7 @@ const IsoGrid = () => {
     return (
         <>
           <GridMain>
-            <ul class="project-cats">
+            <ul className="project-cats">
               <li onClick={handleFilterKeyChange('*')}>All</li>
               <li onClick={handleFilterKeyChange('development')}>Development</li>
               <li onClick={handleFilterKeyChange('residential')}>Residential</li>
@@ -89,7 +89,7 @@ const IsoGrid = () => {
               {propertyMap.map(property => (
 
                 <div className={`filter-item ${property.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
-                  <div class="property-container">
+                  <div className="property-container">
                     <GatsbyImage className={"slide-background"} image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={"slide"} />
                     {/* <div class="property-background" style={{ backgroundImage: `url(${property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData})`, width: '100%'}} /> */}
                     <Link to={property.node.slug}>

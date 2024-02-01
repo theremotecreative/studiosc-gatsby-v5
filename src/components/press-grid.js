@@ -120,13 +120,11 @@ const GridMain = styled.section`
     position: relative;
     z-index: 4;
     li {
-      color: #4c5166;
-      font-family: Roboto;
+      color: #474747;
+      font-family: 'Carlito', sans-serif;
       font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 1px;
+      font-size: 18px;
       padding-left: 20px;
-      text-transform: lowercase;
       margin: 0;
       line-height: 3;
       &:hover {
