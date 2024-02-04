@@ -73,8 +73,9 @@ export const pageQuery = graphql`
         featuredImage: file(relativePath: { eq: "home-sep2023.jpg" }) {
             childImageSharp {
               gatsbyImageData (
-                width: 4000
+                width: 2000
                 quality: 100
+                placeholder: BLURRED
                 formats: [AUTO, WEBP, AVIF]
               )
             }

@@ -22,6 +22,20 @@ class Layout extends Component {
         this.state = { isOpen: false };
         this.container = null;
         this.trigger = null;
+        this.handleRightClick = this.handleRightClick.bind(this); // Bind the function to this component
+    }
+
+    componentDidMount() {
+        document.addEventListener('contextmenu', this.handleRightClick); // Attach the event listener
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('contextmenu', this.handleRightClick); // Clean up the event listener
+    }
+
+    handleRightClick(e) {
+        e.preventDefault(); // Prevent the default context menu from showing
+        alert("This content is copyright protected and unavailable.");
     }
     
     toggleMenu() {
@@ -144,6 +158,9 @@ const HeaderMain = styled.header`
         display: flex;
         justify-content: space-between;
         align-items: center;
+        .header-logo {
+            outline: 0;
+        }
     }
     .mobile-menu-icon {
         display: none;
@@ -184,7 +201,7 @@ const HeaderMain = styled.header`
     }
     .mobile-menu {
         position: fixed;
-        top: 95px;
+        top: 105px;
         z-index: 10;
         background-color: #fff;
         box-shadow: 0px 6px 4px rgba(0,0,0,.1);

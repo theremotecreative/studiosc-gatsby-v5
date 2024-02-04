@@ -50,7 +50,7 @@ const StudioPage = ({ data: { pageContent, sliderContent, markerImage, teamConte
 const AnchorLinks = styled.div`
     position: absolute;
     z-index: 10;
-    top: 80px;
+    top: 90px;
     width: 100%;
     padding: 0 50px;
     display: flex;
@@ -58,16 +58,16 @@ const AnchorLinks = styled.div`
 
     button {
         font-family: 'Carlito', sans-serif;
-        font-size: 18px;
+        font-size: 17px;
+        font-weight: bold;
         color: #474747;
         background: none;
         border: none;
         padding-right: 0;
-        padding-left: 30px;
+        padding-left: 20px;
 
         &:hover {
             cursor: pointer;
-            font-weight: bold;
         }
 
     }

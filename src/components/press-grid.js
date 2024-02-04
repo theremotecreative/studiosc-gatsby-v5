@@ -83,7 +83,6 @@ const PressGrid = () => {
               <li onClick={handleFilterKeyChange('publication')}>Publications</li>
               <li onClick={handleFilterKeyChange('award')}>Awards</li>
             </ul>
-            <h1>Press</h1>
             <ul className="filter-container">
 
               {pressMap.map(press => (
@@ -91,7 +90,7 @@ const PressGrid = () => {
                 <div className={`filter-item ${press.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
                   <a href={press.node.pressInfo.pressLink} target="_blank"  rel="noreferrer">
                     <GatsbyImage className={"slide-background"} image={press.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={press.node.featuredImage.node.title} />
-                    <div>
+                    <div className="press-content">
                       <p>{press.node.pressInfo.pressDate}</p>
                       <h3>{press.node.title}</h3>
                     </div>
@@ -123,7 +122,7 @@ const GridMain = styled.section`
       color: #474747;
       font-family: 'Carlito', sans-serif;
       font-weight: 700;
-      font-size: 18px;
+      font-size: 17px;
       padding-left: 20px;
       margin: 0;
       line-height: 3;
@@ -148,40 +147,43 @@ const GridMain = styled.section`
       margin-bottom: 50px;
   }
   .filter-item {
-    height: 440px;
     width: 25%;
-    border: 40px solid #fff;
+    border: 10px solid #fff;
     background-color: #fff;
     position: relative;
     .gatsby-image-wrapper {
         height: auto;
+        min-height: 346px;
         margin: 0 auto;
-        margin-bottom: 20px;
+        margin-bottom: 0px;
         img {
             object-fit {
                 contain !important;
             }
         }
     }
+    .press-content {
+      margin-bottom: 20px;
+    }
     a {
-        color: #242424;
-        text-decoration: none;
+      color: #242424;
+      text-decoration: none;
     }
     h3 {
-        font-family: Roboto;
-        font-size: 20px;
-        font-weight: 400;
-        margin-top: 0;
-        margin-bottom: 0;
+      font-family: 'Pathway Gothic One',sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      margin-top: 0;
+      margin-bottom: 0;
     }
     p {
-        font-family: Roboto;
-        font-size: 16px;
-        text-transform: uppercase;
-        padding: 8px 0;
-        border-bottom: 1px solid #242424;
-        display: inline-block;
-        margin-bottom: 10px;
+      font-family: Roboto;
+      font-size: 16px;
+      text-transform: uppercase;
+      padding: 8px 0;
+      border-bottom: 1px solid #242424;
+      display: inline-block;
+      margin-bottom: 10px;
     }
   }
   @media(max-width:1200px) {
@@ -201,6 +203,7 @@ const GridMain = styled.section`
     }
   }
   @media(max-width:767px) {
+    padding: 0px;
     ul.project-cats {
       justify-content: center;
       margin-top: 30px;

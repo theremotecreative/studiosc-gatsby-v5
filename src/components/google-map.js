@@ -251,6 +251,9 @@ const MapContainer = styled.div`
   padding: 0 50px;
   margin: 0 auto;
   margin-bottom: 50px;
+  @media(max-width:767px) {
+    padding: 0 20px;
+  }
 `
 
 export default StudioMap;

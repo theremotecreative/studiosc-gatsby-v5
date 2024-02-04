@@ -123,7 +123,7 @@ const GridMain = styled.section`
     position: relative;
     z-index: 4;
     li {
-      color: #4c5166;
+      color: #474747;
       font-family: 'Carlito', sans-serif;
       font-weight: 700;
       font-size: 17px;
