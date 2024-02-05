@@ -56,6 +56,7 @@ const IsoGrid = () => {
                       childImageSharp {
                         gatsbyImageData (
                             width: 800
+                            placeholder: BLURRED
                             formats: [AUTO, WEBP, AVIF]
                         )
                       }
@@ -91,7 +92,6 @@ const IsoGrid = () => {
                 <div className={`filter-item ${property.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
                   <div className="property-container">
                     <GatsbyImage className={"slide-background"} image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={"slide"} />
-                    {/* <div class="property-background" style={{ backgroundImage: `url(${property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData})`, width: '100%'}} /> */}
                     <Link to={property.node.slug}>
                       <div>
                         <h3>{property.node.title}</h3>
