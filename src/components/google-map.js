@@ -211,7 +211,7 @@ class StudioMap extends Component {
       <MapContainer>
         <div style={{ height: '365px', width: '100%' }}>
         <GoogleMapReact
-          bootstrapURLKeys={{ key: 'AIzaSyDatEM3tCs7JMX8f9g2a4GolKtWG95kHas' }}
+          bootstrapURLKeys={{ key: process.env.GATSBY_MAP_API_KEY }}
           defaultCenter={this.props.center}
             defaultZoom={this.props.zoom}
             options={this.createMapOptions}
