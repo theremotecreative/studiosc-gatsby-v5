@@ -70,7 +70,7 @@ export default IndexPage
 
 export const pageQuery = graphql`
     query {
-        featuredImage: file(relativePath: { eq: "home-sep2023.jpg" }) {
+        featuredImage: file(relativePath: { eq: "homepage-2024.jpg" }) {
             childImageSharp {
               gatsbyImageData (
                 width: 2000
