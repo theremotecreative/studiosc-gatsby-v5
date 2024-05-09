@@ -91,6 +91,7 @@ const ProfileSection = styled.section`
                 max-width: 100%;
                 width: 100%;
                 .gatsby-image-wrapper {
+                    width: 100%;
                     img {
                         display: block;
                         object-fit: cover;
@@ -144,17 +145,18 @@ const ProfileSection = styled.section`
         }
     }
     @media(max-width:1200px) {
-        max-width: 900px;
+        max-width: 100%;
         div.slider-container {
-            max-width: 800px;
+            max-width: 100%;
             .slick-slider {
-                max-width: 700px;
+                max-width: 100%;
                 .slick-slide {
-                    max-width: 700px;
+                    max-width: 100%x;
                     .gatsby-image-wrapper {
+                        width: 100%;
                         img {
                             height: 440px;
-                            width: 660px;
+                            width: 100%;
                         }
                     }
                 }
@@ -172,17 +174,18 @@ const ProfileSection = styled.section`
         }
     }
     @media(max-width:900px) {
-        max-width: 700px;
+        max-width: 100%;
         div.slider-container {
-            max-width: 600px;
+            max-width: 100%;
             .slick-slider {
-                max-width: 500px;
+                max-width: 100%;
                 .slick-slide {
-                    max-width: 500px;
+                    max-width: 100%;
                     .gatsby-image-wrapper {
+                        width: 100%;
                         img {
                             height: 320px;
-                            width: 460px;
+                            width: 100%;
                         }
                     }
                 }
