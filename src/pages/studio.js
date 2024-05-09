@@ -94,7 +94,7 @@ const ProfileSection = styled.section`
                     img {
                         display: block;
                         object-fit: cover;
-                        height: 740px;
+                        height: 640px;
                         width: 100%;
                     }
                 }

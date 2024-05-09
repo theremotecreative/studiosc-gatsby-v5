@@ -33,10 +33,10 @@ class Layout extends Component {
         document.removeEventListener('contextmenu', this.handleRightClick); // Clean up the event listener
     }
 
-    handleRightClick(e) {
-        e.preventDefault(); // Prevent the default context menu from showing
-        alert("This content is copyright protected and unavailable.");
-    }
+    // handleRightClick(e) {
+    //     e.preventDefault(); // Prevent the default context menu from showing
+    //     alert("This content is copyright protected and unavailable.");
+    // }
     
     toggleMenu() {
         this.setState({ isOpen: !this.state.isOpen });
