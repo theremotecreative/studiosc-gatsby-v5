@@ -20,18 +20,18 @@ class Layout extends Component {
     constructor(props) {
         super(props);
         this.state = { isOpen: false };
-        this.container = null;
-        this.trigger = null;
-        this.handleRightClick = this.handleRightClick.bind(this); // Bind the function to this component
+        // this.container = null;
+        // this.trigger = null;
+        // this.handleRightClick = this.handleRightClick.bind(this); // Bind the function to this component
     }
 
-    componentDidMount() {
-        document.addEventListener('contextmenu', this.handleRightClick); // Attach the event listener
-    }
+    // componentDidMount() {
+    //     document.addEventListener('contextmenu', this.handleRightClick); // Attach the event listener
+    // }
 
-    componentWillUnmount() {
-        document.removeEventListener('contextmenu', this.handleRightClick); // Clean up the event listener
-    }
+    // componentWillUnmount() {
+    //     document.removeEventListener('contextmenu', this.handleRightClick); // Clean up the event listener
+    // }
 
     // handleRightClick(e) {
     //     e.preventDefault(); // Prevent the default context menu from showing
