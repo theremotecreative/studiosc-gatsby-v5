@@ -82,20 +82,20 @@ const ProfileSection = styled.section`
         overflow: hidden;
         .slick-slider {
             width: 100%;
-            max-width: 890px;
+            max-width: 100%;
             overflow: visible;
             .slick-list {
                 overflow: visible;
             }
             .slick-slide {
-                max-width: 890px;
-                width: 890px;
+                max-width: 100%;
+                width: 100%;
                 .gatsby-image-wrapper {
                     img {
                         display: block;
                         object-fit: cover;
                         height: 640px;
-                        width: 850px;
+                        width: 100%;
                     }
                 }
             }
