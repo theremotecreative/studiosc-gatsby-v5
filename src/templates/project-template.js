@@ -1,7 +1,7 @@
 import React from "react"
 import { graphql, Link } from "gatsby"
 import styled from "styled-components"
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
@@ -14,7 +14,7 @@ const ProjectTemplate = ({ data }) => {
     return <p>Project data is missing. Please check the query and context.</p>
   }
 
-  const featuredImage = post.seo.opengraphImage.localFile.childImageSharp.gatsbyImageData
+  const featuredImage = getImage(post.seo.opengraphImage.localFile)
 
   return (
     <Layout>
@@ -41,13 +41,15 @@ const ProjectTemplate = ({ data }) => {
           </div>
 
           {/* Featured Image */}
-          <div className="featured-image">
-            <GatsbyImage
-              className="featured-img"
-              image={featuredImage}
-              alt={post.title}
-            />
-          </div>
+          {featuredImage && (
+            <div className="featured-image">
+              <GatsbyImage
+                className="featured-img"
+                image={featuredImage}
+                alt={post.title}
+              />
+            </div>
+          )}
 
           {/* Property Info Section */}
           <div className="property-info">
@@ -151,7 +153,7 @@ const ProjectMain = styled.div`
     .gatsby-image-wrapper {
       width: calc(100% + 100px);
       margin-left: -50px;
-      max-height: 100vh;
+      max-height: none;
     }
   }
 
@@ -407,13 +409,11 @@ export const pageQuery = graphql`
           localFile {
             childImageSharp {
               gatsbyImageData(
-                width: 1130
+                width: 1920
+                quality: 90
                 placeholder: BLURRED
                 formats: [AUTO, WEBP, AVIF]
               )
-              fluid(maxWidth: 1920) {
-                ...GatsbyImageSharpFluid_withWebp
-              }
             }
           }
         }
