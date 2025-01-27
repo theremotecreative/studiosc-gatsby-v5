@@ -120,6 +120,8 @@ const ProjectMain = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
+    max-width: 1280px;
+    margin: auto;
 
     .top-info-left {
       flex: 1.6;
@@ -162,6 +164,8 @@ const ProjectMain = styled.div`
     grid-template-columns: 1fr 0.6fr 0.8fr;
     gap: 20px;
     margin-top: 50px;
+    max-width: 1280px;
+    margin: auto;
 
     .info-left {
       h2 {
@@ -234,6 +238,8 @@ const ProjectMain = styled.div`
 
   .gutenberg-content {
     margin-top: 40px;
+    max-width: 1280px;
+    margin: auto;
 
     h1, h2, h3, h4, h5, h6 {
       font-family: "Roboto", sans-serif;
