@@ -78,7 +78,7 @@ const ProjectTemplate = ({ data }) => {
                   <p>Size</p> {post.propertyInfo.propertySize}
                 </li>
                 <li>
-                  <p>Date</p> completed {post.propertyInfo.propertyDate}
+                  <p>Date completed</p> {post.propertyInfo.propertyDate}
                 </li>
                 <li className="tag-list">
                   <p>Tags</p>
@@ -122,6 +122,7 @@ const ProjectMain = styled.div`
     margin-bottom: 30px;
     max-width: 1280px;
     margin: auto;
+    padding: 0 28px;
 
     .top-info-left {
       flex: 1.6;
@@ -141,6 +142,7 @@ const ProjectMain = styled.div`
 
     .top-info-right {
       flex: 1;
+      display: none;
 
       p {
         font-size: 14px;
@@ -166,6 +168,7 @@ const ProjectMain = styled.div`
     margin-top: 50px;
     max-width: 1280px;
     margin: auto;
+    padding: 0 28px;
 
     .info-left {
       h2 {
@@ -231,6 +234,7 @@ const ProjectMain = styled.div`
 
         .tag-list {
           display: block; /* Explicitly set display block for the tag-list class */
+          display: none;
         }
       }
     }
@@ -240,6 +244,7 @@ const ProjectMain = styled.div`
     margin-top: 40px;
     max-width: 1280px;
     margin: auto;
+    padding: 0 28px;
 
     h1, h2, h3, h4, h5, h6 {
       font-family: "Roboto", sans-serif;
@@ -304,6 +309,14 @@ const ProjectMain = styled.div`
 
   .padding-right-10-percent{
     padding-right: 10%;
+  }
+
+  .img-less-height{
+    height: calc(100% - 2em);
+
+    img{
+      height: 100%;
+    }
   }
 
   @media (max-width: 992px) {
