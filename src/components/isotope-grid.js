@@ -1,116 +1,173 @@
-import React, { useState, useEffect }  from "react"
-import { useStaticQuery, graphql, Link } from "gatsby"
-import styled from 'styled-components'
-import { GatsbyImage } from "gatsby-plugin-image"
-
+import React, { useState, useEffect } from "react";
+import { useStaticQuery, graphql, Link } from "gatsby";
+import styled from "styled-components";
+import { GatsbyImage } from "gatsby-plugin-image";
 import Isotope from "isotope-layout/js/isotope";
 
 const IsoGrid = () => {
+  const isotope = React.useRef();
+  const [filterKey, setFilterKey] = useState("*");
+  const [parentCategory, setParentCategory] = useState(null);
 
-    if (typeof window !== `undefined`) {
+  // Initialize Isotope
+  useEffect(() => {
+    isotope.current = new Isotope(".filter-container", {
+      itemSelector: ".filter-item",
+      layoutMode: "fitRows",
+    });
+    return () => isotope.current.destroy();
+  }, []);
 
-      // import Isotope API
-      const Isotope = require("isotope-layout/js/isotope");
-      
+  // Apply filtering
+  useEffect(() => {
+    isotope.current.arrange({
+      filter: filterKey === "*" ? `*` : `.${filterKey}`,
+    });
+  }, [filterKey]);
+
+  // Handle submenus for parent categories
+  useEffect(() => {
+    const developmentItem = document.querySelector(
+      ".project-cats > li:nth-child(2)"
+    );
+    const sizeSubMenu = document.querySelector(".size-cats");
+
+    if (parentCategory === "development" && developmentItem && sizeSubMenu) {
+      developmentItem.appendChild(sizeSubMenu);
+      sizeSubMenu.style.display = "block";
+    } else if (sizeSubMenu) {
+      sizeSubMenu.style.display = "none";
     }
+  }, [parentCategory]);
 
-    // init one ref to store the future isotope object
-    const isotope = React.useRef()
-    // store the filter keyword in a state
-    const [filterKey, setFilterKey] = React.useState('*')
+  // Handle parent category clicks
+  const handleParentCategoryClick = (key) => () => {
+    setParentCategory(key === parentCategory ? null : key);
+    setFilterKey(key === parentCategory ? "*" : key);
+  };
 
-    // initialize an Isotope object with configs
-    React.useEffect(() => {
-        isotope.current = new Isotope('.filter-container', {
-        itemSelector: '.filter-item',
-        layoutMode: 'fitRows',
-        })
-        // cleanup
-        return () => isotope.current.destroy()
-    }, [])
+  // Handle child category clicks
+  const handleChildCategoryClick = (key) => () => {
+    setFilterKey(key);
+  };
 
-    // handling filter key change
-    React.useEffect(() => {
-        filterKey === '*'
-        ? isotope.current.arrange({filter: `*`})
-        : isotope.current.arrange({filter: `.${filterKey}`})
-    }, [filterKey])
-
-    const handleFilterKeyChange = key => () => setFilterKey(key)
-
-    const data = useStaticQuery(graphql`
-        query {
-          allWpProperty(sort: {fields: date, order: DESC}) {
-            edges {
-              node {
-                title
+  // Fetch data using GraphQL
+  const data = useStaticQuery(graphql`
+    query {
+      allWpProperty(sort: { fields: date, order: DESC }) {
+        edges {
+          node {
+            title
+            slug
+            categories {
+              nodes {
                 slug
-                categories {
-                  nodes {
-                    slug
+              }
+            }
+            featuredImage {
+              node {
+                localFile {
+                  childImageSharp {
+                    gatsbyImageData(
+                      width: 800
+                      placeholder: BLURRED
+                      formats: [AUTO, WEBP, AVIF]
+                    )
                   }
                 }
-                featuredImage {
-                  node {
-                    localFile {
-                      childImageSharp {
-                        gatsbyImageData (
-                            width: 800
-                            placeholder: BLURRED
-                            formats: [AUTO, WEBP, AVIF]
-                        )
-                      }
-                    }
+              }
+            }
+            propertyInfo {
+              propertyLocation
+              secondaryImage {
+                localFile {
+                  childImageSharp {
+                    gatsbyImageData(
+                      width: 800
+                      placeholder: BLURRED
+                      formats: [AUTO, WEBP, AVIF]
+                    )
                   }
-                }
-                propertyInfo {
-                  propertyLocation
                 }
               }
             }
           }
         }
-    `)
+      }
+    }
+  `);
 
-    const propertyMap = data.allWpProperty.edges
+  const propertyMap = data.allWpProperty.edges;
 
-    return (
-        <>
-          <GridMain>
-            <ul className="project-cats">
-              <li onClick={handleFilterKeyChange('*')}>All</li>
-              <li onClick={handleFilterKeyChange('development')}>Development</li>
-              <li onClick={handleFilterKeyChange('residential')}>Residential</li>
-              <li onClick={handleFilterKeyChange('office')}>Office</li>
-              <li onClick={handleFilterKeyChange('adaptive-reuse')}>Adaptive Reuse</li>
-              <li onClick={handleFilterKeyChange('commerce')}>Commerce</li>
-            </ul>
-            <ul className="filter-container">
+  return (
+    <GridMain>
+      {/* Categories */}
+      <ul className="project-cats">
+        <li onClick={handleParentCategoryClick("*")}>All</li>
+        <li onClick={handleParentCategoryClick("development")}>
+          Development
+        </li>
+        <ul className="size-cats">
+          <li onClick={handleChildCategoryClick("s")}>S</li>
+          <li onClick={handleChildCategoryClick("m")}>M</li>
+          <li onClick={handleChildCategoryClick("l")}>L</li>
+          <li onClick={handleChildCategoryClick("xl")}>XL</li>
+        </ul>
+        <li onClick={handleParentCategoryClick("residential")}>
+          Residential
+        </li>
+        <li onClick={handleParentCategoryClick("office")}>Office</li>
+        <li onClick={handleParentCategoryClick("adaptive-reuse")}>
+          Adaptive Reuse
+        </li>
+        <li onClick={handleParentCategoryClick("commerce")}>Commerce</li>
+      </ul>
 
-              {propertyMap.map(property => (
-
-                <div className={`filter-item ${property.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
-                  <div className="property-container">
-                    <GatsbyImage className={"slide-background"} image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={"slide"} />
-                    <Link to={property.node.slug}>
-                      <div>
-                        <h3>{property.node.title}</h3>
-                        <p>{property.node.propertyInfo.propertyLocation}</p>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </ul>
-          </GridMain>
-        </>
-    )
-
-}
+      {/* Properties */}
+      <ul className="filter-container">
+        {propertyMap.map((property) => (
+          <Link
+            to={property.node.slug}
+            key={property.node.slug}
+            className={`filter-item ${property.node.categories.nodes
+              .map((category) => category.slug)
+              .join(" ")}`}
+          >
+            <div className="property-container">
+              <div className="image-container">
+                <GatsbyImage
+                  className="featured-image"
+                  image={
+                    property.node.featuredImage.node.localFile.childImageSharp
+                      .gatsbyImageData
+                  }
+                  alt={property.node.title}
+                />
+                <div
+                  className="hover-image"
+                  style={{
+                    backgroundImage: property.node.propertyInfo.secondaryImage
+                      ? `url(${property.node.propertyInfo.secondaryImage.localFile.childImageSharp.gatsbyImageData.images.fallback.src})`
+                      : `url('https://via.placeholder.com/800x400')`,
+                  }}
+                ></div>
+              </div>
+              <div className="info">
+                <h3>{property.node.title} -</h3>
+                <p>{property.node.propertyInfo.propertyLocation}</p>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </ul>
+    </GridMain>
+  );
+};
 
 const GridMain = styled.section`
   max-width: 100%;
   padding: 0 30px;
+
   ul.project-cats {
     list-style: none;
     display: flex;
@@ -119,123 +176,152 @@ const GridMain = styled.section`
     align-items: center;
     padding: 0 20px;
     margin: 0;
-    margin-top: -25px;
-    position: relative;
-    z-index: 4;
+
     li {
       color: #474747;
-      font-family: 'Carlito', sans-serif;
-      font-weight: 700;
+      font-family: 'Calibri', sans-serif;
+      font-weight: 300;
       font-size: 17px;
       padding-left: 20px;
-      margin: 0;
-      line-height: 3;
+      position: relative;
+
       &:hover {
         cursor: pointer;
       }
+
+      ul.size-cats {
+        list-style: none;
+        display: none;
+        flex-direction: column;
+        margin: 0;
+        position: absolute;
+        left: 32px;
+        top: 21px;
+        z-index: 3;
+
+        li {
+          font-size: 13px;
+          padding: 0 4px;
+          text-transform: uppercase;
+          display: inline-block;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
     }
   }
-  .filter-item {
-    height: 400px;
-    width: 33%;
-    border: 10px solid #fff;
-    background-color: #fff;
-    position: relative;
-    .property-container {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-    .gatsby-image-wrapper {
-      position: absolute !important;
-      height: 100%;
-      width: 100%;
-      max-height: 100% !important;
-      max-width: 100% !important;
-      z-index: 1;
-      opacity: 1;
-      transition-duration: .5s;
-      > div {
-        height: 100%;
-        width: 100%;
-        max-height: 100% !important;
-        max-width: 100% !important;
-      }
-      img {
-        width: 100% !important;
-        height: 100% !important;
-        max-height: 100% !important;
-        max-width: 100% !important;
-        object-fit: cover !important;
-        aspect-ratio: unset !important;
-      }
-    }
-    a {
-      position: absolute;
-      display: flex;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      justify-content: center;
-      align-items: center;
-      color: #000;
+
+  .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+
+    .filter-item {
+      width: 33%;
+      padding: 10px;
       text-decoration: none;
-      z-index: 2;
-      opacity: 0;
-      transition-duration: .5s;
-    }
-    h3 {
-      font-family: 'Pathway Gothic One',sans-serif;
-      text-align: center;
-      font-size: 30px;
-      letter-spacing: 1.5px;
-      font-weight: 400;
-      text-transform: uppercase;
-    }
-    p {
-      font-family: 'Pathway Gothic One',sans-serif;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 400;
-    }
-    &:hover {
-      .gatsby-image-wrapper {
-        opacity: 0;
+
+      .property-container {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        text-align: center;
+        cursor: pointer;
+
+        .image-container {
+          position: relative;
+          overflow: hidden;
+          height: 360px;
+
+          .featured-image {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+          }
+
+          .hover-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+        }
+
+        &:hover .hover-image {
+          opacity: 1;
+        }
+
+        &:hover .featured-image {
+          opacity: 0;
+        }
+
+        .info {
+          padding: 10px;
+          display: flex;
+          justify-content: end;
+          align-items: center;
+          gap: 4px;
+
+          h3 {
+            font-family: 'Calibri', sans-serif;
+            font-size: 16px;
+            line-height: 16px;
+            margin: 0;
+            font-weight: 300;
+          }
+
+          p {
+            font-family: 'Calibri', sans-serif;
+            font-size: 15px;
+            margin: 0;
+            color: #1a202c;
+            font-weight: 300;
+          }
+        }
       }
-      a {
-        opacity: 1;
-      }
     }
-  }
-  @media(max-width:1200px) {
+
+  @media (max-width: 1200px) {
     .filter-item {
       width: 50%;
     }
   }
-  @media(max-width:767px) {
+
+  @media (max-width: 767px) {
     padding: 0 10px;
+
     ul.project-cats {
       flex-wrap: wrap;
       justify-content: center;
       margin-top: 30px;
     }
+
     .filter-item {
       width: 100%;
       height: 300px;
+
       .gatsby-image-wrapper {
         opacity: 1 !important;
       }
+
       a {
         opacity: 1 !important;
         color: #fff !important;
-        background-color: rgba(0,0,0,.5);
+        background-color: rgba(0, 0, 0, 0.5);
       }
+
       h3 {
         color: #fff !important;
       }
     }
   }
-`
+`;
 
-export default IsoGrid
+export default IsoGrid;
