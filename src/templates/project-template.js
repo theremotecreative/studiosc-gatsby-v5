@@ -120,7 +120,6 @@ const ProjectMain = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
-    max-width: 1280px;
     margin: auto;
     padding: 0 28px;
 
@@ -142,7 +141,6 @@ const ProjectMain = styled.div`
 
     .top-info-right {
       flex: 1;
-      display: none;
 
       p {
         font-size: 14px;
@@ -166,7 +164,6 @@ const ProjectMain = styled.div`
     grid-template-columns: 1fr 0.6fr 0.8fr;
     gap: 20px;
     margin-top: 50px;
-    max-width: 1280px;
     margin: auto;
     padding: 0 28px;
 
@@ -242,7 +239,6 @@ const ProjectMain = styled.div`
 
   .gutenberg-content {
     margin-top: 40px;
-    max-width: 1280px;
     margin: auto;
     padding: 0 28px;
 
