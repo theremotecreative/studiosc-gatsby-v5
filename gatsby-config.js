@@ -75,6 +75,7 @@ module.exports = {
     `gatsby-plugin-styled-components`,
     `gatsby-plugin-smoothscroll`,
     "gatsby-plugin-netlify",
+    "gatsby-plugin-gatsby-cloud",
     {
       // See https://www.gatsbyjs.com/plugins/gatsby-plugin-manifest/?=gatsby-plugin-manifest
       resolve: `gatsby-plugin-manifest`,
