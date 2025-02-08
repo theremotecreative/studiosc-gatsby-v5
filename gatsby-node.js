@@ -33,8 +33,8 @@ exports.createPages = async gatsbyUtilities => {
     return
   }
 
-   // If there are projects, create pages for them
-   await createIndividualProjectPages({ pages, gatsbyUtilities })
+  // If there are projects, create pages for them
+  await createIndividualProjectPages({ pages, gatsbyUtilities })
 }
 
 /**
@@ -140,7 +140,7 @@ async function getPosts({ graphql, reporter }) {
   const graphqlResult = await graphql(/* GraphQL */ `
     query WpPosts {
       # Query all WordPress blog posts sorted by date
-      allWpPost(sort: { fields: [date], order: DESC }) {
+      allWpPost(sort: { date: DESC }) {
         edges {
           previous {
             id
@@ -172,82 +172,81 @@ async function getPosts({ graphql, reporter }) {
   return graphqlResult.data.allWpPost.edges
 }
 
-
 /**
  * This function creates all the project pages in this site
  */
 const createIndividualProjectPages = async ({ pages, gatsbyUtilities }) =>
-Promise.all(
-  pages.map(({ page }) =>
-    // createPage is an action passed to createPages
-    // See https://www.gatsbyjs.com/docs/actions#createPage for more info
-    gatsbyUtilities.actions.createPage({
-      // Use the WordPress uri as the Gatsby page path
-      // This is a good idea so that internal links and menus work 👍
-      path: `/projects/${page.slug}`,
+  Promise.all(
+    pages.map(({ page }) =>
+      // createPage is an action passed to createPages
+      // See https://www.gatsbyjs.com/docs/actions#createPage for more info
+      gatsbyUtilities.actions.createPage({
+        // Use the WordPress uri as the Gatsby page path
+        // This is a good idea so that internal links and menus work 👍
+        path: `/projects/${page.slug}`,
 
-      // use the blog post template as the page component
-      component: path.resolve(`./src/templates/project-template.js`),
+        // use the blog post template as the page component
+        component: path.resolve(`./src/templates/project-template.js`),
 
-      // `context` is available in the template as a prop and
-      // as a variable in GraphQL.
-      context: {
-        // we need to add the post id here
-        // so our blog post template knows which blog post
-        // the current page is (when you open it in a browser)
-        id: page.id,
+        // `context` is available in the template as a prop and
+        // as a variable in GraphQL.
+        context: {
+          // we need to add the post id here
+          // so our blog post template knows which blog post
+          // the current page is (when you open it in a browser)
+          id: page.id,
 
-        // We also use the next and previous id's to query them and add links!
-        //previousPostId: previous ? previous.id : null,
-        //nextPostId: next ? next.id : null,
-      },
-    })
+          // We also use the next and previous id's to query them and add links!
+          //previousPostId: previous ? previous.id : null,
+          //nextPostId: next ? next.id : null,
+        },
+      })
+    )
   )
-)
 
 /**
-* This function queries Gatsby's GraphQL server and asks for the project pages
-*/
+ * This function queries Gatsby's GraphQL server and asks for the project pages
+ */
 async function getProjects({ graphql, reporter }) {
- const graphqlResult = await graphql(/* GraphQL */ `
-   query WpProperties {
-     # Query all WordPress properties
-     allWpProperty {
-       edges {
-         # note: this is a GraphQL alias. It renames "node" to "page" for this query
-         # We're doing this because this "node" is a page! It makes our code more readable further down the line.
-         page: node {
-           id
-           slug
-         }
-       }
-     }
-   }
- `)
+  const graphqlResult = await graphql(/* GraphQL */ `
+    query WpProperties {
+      # Query all WordPress properties
+      allWpProperty {
+        edges {
+          # note: this is a GraphQL alias. It renames "node" to "page" for this query
+          # We're doing this because this "node" is a page! It makes our code more readable further down the line.
+          page: node {
+            id
+            slug
+          }
+        }
+      }
+    }
+  `)
 
- if (graphqlResult.errors) {
-   reporter.panicOnBuild(
-     `There was an error loading your blog posts`,
-     graphqlResult.errors
-   )
-   return
- }
+  if (graphqlResult.errors) {
+    reporter.panicOnBuild(
+      `There was an error loading your blog posts`,
+      graphqlResult.errors
+    )
+    return
+  }
 
- return graphqlResult.data.allWpProperty.edges
+  return graphqlResult.data.allWpProperty.edges
 }
 
 //Fixing error in Isotope grid
-exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => { 
-  if (stage === 'build-html') { 
-    actions.setWebpackConfig({ 
-      module: { 
-        rules: [ 
-          { 
-            test: /isotope-layout/, 
-            use: loaders.null(), 
-          }, 
-        ], 
-      }, 
-    }); 
-  } 
-}; 
+exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+  if (stage === "build-html") {
+    actions.setWebpackConfig({
+      module: {
+        rules: [
+          {
+            test: /isotope-layout/,
+            use: loaders.null(),
+          },
+        ],
+      },
+    })
+  }
+}
