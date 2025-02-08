@@ -60,7 +60,7 @@ module.exports = {
           `Pathway Gothic One:400`,
           `Lato:400`,
         ],
-        display: 'swap'
+        display: "swap",
       },
     },
 
@@ -74,6 +74,7 @@ module.exports = {
     `gatsby-plugin-image`,
     `gatsby-plugin-styled-components`,
     `gatsby-plugin-smoothscroll`,
+    "gatsby-plugin-netlify",
     {
       // See https://www.gatsbyjs.com/plugins/gatsby-plugin-manifest/?=gatsby-plugin-manifest
       resolve: `gatsby-plugin-manifest`,

@@ -1,107 +1,116 @@
-import React, { useState, useEffect }  from "react"
+import React, { useState, useEffect } from "react"
 import { useStaticQuery, graphql, Link } from "gatsby"
-import styled from 'styled-components'
+import styled from "styled-components"
 import { GatsbyImage } from "gatsby-plugin-image"
 
-import Isotope from "isotope-layout/js/isotope";
+import Isotope from "isotope-layout/js/isotope"
 
 const PressGrid = () => {
+  if (typeof window !== `undefined`) {
+    // import Isotope API
+    const Isotope = require("isotope-layout/js/isotope")
+  }
 
-    if (typeof window !== `undefined`) {
+  // init one ref to store the future isotope object
+  const isotope = React.useRef()
+  // store the filter keyword in a state
+  const [filterKey, setFilterKey] = React.useState("*")
 
-      // import Isotope API
-      const Isotope = require("isotope-layout/js/isotope");
-      
-    }
+  // initialize an Isotope object with configs
+  React.useEffect(() => {
+    isotope.current = new Isotope(".filter-container", {
+      itemSelector: ".filter-item",
+      layoutMode: "fitRows",
+    })
+    // cleanup
+    return () => isotope.current.destroy()
+  }, [])
 
-    // init one ref to store the future isotope object
-    const isotope = React.useRef()
-    // store the filter keyword in a state
-    const [filterKey, setFilterKey] = React.useState('*')
+  // handling filter key change
+  React.useEffect(() => {
+    filterKey === "*"
+      ? isotope.current.arrange({ filter: `*` })
+      : isotope.current.arrange({ filter: `.${filterKey}` })
+  }, [filterKey])
 
-    // initialize an Isotope object with configs
-    React.useEffect(() => {
-        isotope.current = new Isotope('.filter-container', {
-        itemSelector: '.filter-item',
-        layoutMode: 'fitRows',
-        })
-        // cleanup
-        return () => isotope.current.destroy()
-    }, [])
+  const handleFilterKeyChange = key => () => setFilterKey(key)
 
-    // handling filter key change
-    React.useEffect(() => {
-        filterKey === '*'
-        ? isotope.current.arrange({filter: `*`})
-        : isotope.current.arrange({filter: `.${filterKey}`})
-    }, [filterKey])
-
-    const handleFilterKeyChange = key => () => setFilterKey(key)
-
-    const data = useStaticQuery(graphql`
-        query {
-          allWpStudioPress(sort: {fields: date, order: DESC}) {
-            edges {
+  const data = useStaticQuery(graphql`
+    query {
+      allWpStudioPress(sort: { date: DESC }) {
+        edges {
+          node {
+            title
+            categories {
+              nodes {
+                slug
+              }
+            }
+            featuredImage {
               node {
                 title
-                categories {
-                  nodes {
-                    slug
+                localFile {
+                  childImageSharp {
+                    gatsbyImageData(
+                      width: 400
+                      placeholder: DOMINANT_COLOR
+                      formats: [AUTO, WEBP, AVIF]
+                    )
                   }
-                }
-                featuredImage {
-                  node {
-                    title
-                    localFile {
-                      childImageSharp {
-                        gatsbyImageData (
-                            width: 400
-                            placeholder: DOMINANT_COLOR
-                            formats: [AUTO, WEBP, AVIF]
-                        )
-                      }
-                    }
-                  }
-                }
-                pressInfo {
-                  pressDate
-                  pressLink
                 }
               }
             }
+            pressInfo {
+              pressDate
+              pressLink
+            }
           }
         }
-    `)
+      }
+    }
+  `)
 
-    const pressMap = data.allWpStudioPress.edges
+  const pressMap = data.allWpStudioPress.edges
 
-    return (
-        <>
-          <GridMain>
-            <ul class="project-cats">
-              <li onClick={handleFilterKeyChange('*')}>All</li>
-              <li onClick={handleFilterKeyChange('publication')}>Publications</li>
-              <li onClick={handleFilterKeyChange('award')}>Awards</li>
-            </ul>
-            <ul className="filter-container">
-
-              {pressMap.map(press => (
-
-                <div className={`filter-item ${press.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
-                  <a href={press.node.pressInfo.pressLink} target="_blank"  rel="noreferrer">
-                    <GatsbyImage className={"slide-background"} image={press.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={press.node.featuredImage.node.title} />
-                    <div className="press-content">
-                      <p>{press.node.pressInfo.pressDate}</p>
-                      <h3>{press.node.title}</h3>
-                    </div>
-                  </a>
+  return (
+    <>
+      <GridMain>
+        <ul class="project-cats">
+          <li onClick={handleFilterKeyChange("*")}>All</li>
+          <li onClick={handleFilterKeyChange("publication")}>Publications</li>
+          <li onClick={handleFilterKeyChange("award")}>Awards</li>
+        </ul>
+        <ul className="filter-container">
+          {pressMap.map(press => (
+            <div
+              className={`filter-item ${press.node.categories.nodes
+                .map(category => category.slug)
+                .join(" ")}`}
+            >
+              <a
+                href={press.node.pressInfo.pressLink}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <GatsbyImage
+                  className={"slide-background"}
+                  image={
+                    press.node.featuredImage.node.localFile.childImageSharp
+                      .gatsbyImageData
+                  }
+                  alt={press.node.featuredImage.node.title}
+                />
+                <div className="press-content">
+                  <p>{press.node.pressInfo.pressDate}</p>
+                  <h3>{press.node.title}</h3>
                 </div>
-              ))}
-            </ul>
-          </GridMain>
-        </>
-    )
-
+              </a>
+            </div>
+          ))}
+        </ul>
+      </GridMain>
+    </>
+  )
 }
 
 const GridMain = styled.section`
