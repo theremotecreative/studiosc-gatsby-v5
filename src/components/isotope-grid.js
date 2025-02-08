@@ -1,111 +1,118 @@
-import React, { useState, useEffect }  from "react"
+import React, { useState, useEffect } from "react"
 import { useStaticQuery, graphql, Link } from "gatsby"
-import styled from 'styled-components'
+import styled from "styled-components"
 import { GatsbyImage } from "gatsby-plugin-image"
 
-import Isotope from "isotope-layout/js/isotope";
+import Isotope from "isotope-layout/js/isotope"
 
 const IsoGrid = () => {
+  if (typeof window !== `undefined`) {
+    // import Isotope API
+    const Isotope = require("isotope-layout/js/isotope")
+  }
 
-    if (typeof window !== `undefined`) {
+  // init one ref to store the future isotope object
+  const isotope = React.useRef()
+  // store the filter keyword in a state
+  const [filterKey, setFilterKey] = React.useState("*")
 
-      // import Isotope API
-      const Isotope = require("isotope-layout/js/isotope");
-      
-    }
+  // initialize an Isotope object with configs
+  React.useEffect(() => {
+    isotope.current = new Isotope(".filter-container", {
+      itemSelector: ".filter-item",
+      layoutMode: "fitRows",
+    })
+    // cleanup
+    return () => isotope.current.destroy()
+  }, [])
 
-    // init one ref to store the future isotope object
-    const isotope = React.useRef()
-    // store the filter keyword in a state
-    const [filterKey, setFilterKey] = React.useState('*')
+  // handling filter key change
+  React.useEffect(() => {
+    filterKey === "*"
+      ? isotope.current.arrange({ filter: `*` })
+      : isotope.current.arrange({ filter: `.${filterKey}` })
+  }, [filterKey])
 
-    // initialize an Isotope object with configs
-    React.useEffect(() => {
-        isotope.current = new Isotope('.filter-container', {
-        itemSelector: '.filter-item',
-        layoutMode: 'fitRows',
-        })
-        // cleanup
-        return () => isotope.current.destroy()
-    }, [])
+  const handleFilterKeyChange = key => () => setFilterKey(key)
 
-    // handling filter key change
-    React.useEffect(() => {
-        filterKey === '*'
-        ? isotope.current.arrange({filter: `*`})
-        : isotope.current.arrange({filter: `.${filterKey}`})
-    }, [filterKey])
-
-    const handleFilterKeyChange = key => () => setFilterKey(key)
-
-    const data = useStaticQuery(graphql`
-        query {
-          allWpProperty(sort: {fields: date, order: DESC}) {
-            edges {
-              node {
-                title
+  const data = useStaticQuery(graphql`
+    query {
+      allWpProperty(sort: { date: DESC }) {
+        edges {
+          node {
+            title
+            slug
+            categories {
+              nodes {
                 slug
-                categories {
-                  nodes {
-                    slug
+              }
+            }
+            featuredImage {
+              node {
+                localFile {
+                  childImageSharp {
+                    gatsbyImageData(
+                      width: 800
+                      placeholder: BLURRED
+                      formats: [AUTO, WEBP, AVIF]
+                    )
                   }
-                }
-                featuredImage {
-                  node {
-                    localFile {
-                      childImageSharp {
-                        gatsbyImageData (
-                            width: 800
-                            placeholder: BLURRED
-                            formats: [AUTO, WEBP, AVIF]
-                        )
-                      }
-                    }
-                  }
-                }
-                propertyInfo {
-                  propertyLocation
                 }
               }
             }
+            propertyInfo {
+              propertyLocation
+            }
           }
         }
-    `)
+      }
+    }
+  `)
 
-    const propertyMap = data.allWpProperty.edges
+  const propertyMap = data.allWpProperty.edges
 
-    return (
-        <>
-          <GridMain>
-            <ul className="project-cats">
-              <li onClick={handleFilterKeyChange('*')}>All</li>
-              <li onClick={handleFilterKeyChange('development')}>Development</li>
-              <li onClick={handleFilterKeyChange('residential')}>Residential</li>
-              <li onClick={handleFilterKeyChange('office')}>Office</li>
-              <li onClick={handleFilterKeyChange('adaptive-reuse')}>Adaptive Reuse</li>
-              <li onClick={handleFilterKeyChange('commerce')}>Commerce</li>
-            </ul>
-            <ul className="filter-container">
-
-              {propertyMap.map(property => (
-
-                <div className={`filter-item ${property.node.categories.nodes.map(category => ( category.slug  )).join(' ')}`}>
-                  <div className="property-container">
-                    <GatsbyImage className={"slide-background"} image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={"slide"} />
-                    <Link to={property.node.slug}>
-                      <div>
-                        <h3>{property.node.title}</h3>
-                        <p>{property.node.propertyInfo.propertyLocation}</p>
-                      </div>
-                    </Link>
+  return (
+    <>
+      <GridMain>
+        <ul className="project-cats">
+          <li onClick={handleFilterKeyChange("*")}>All</li>
+          <li onClick={handleFilterKeyChange("development")}>Development</li>
+          <li onClick={handleFilterKeyChange("residential")}>Residential</li>
+          <li onClick={handleFilterKeyChange("office")}>Office</li>
+          <li onClick={handleFilterKeyChange("adaptive-reuse")}>
+            Adaptive Reuse
+          </li>
+          <li onClick={handleFilterKeyChange("commerce")}>Commerce</li>
+        </ul>
+        <ul className="filter-container">
+          {propertyMap.map(property => (
+            <div
+              className={`filter-item ${property.node.categories.nodes
+                .map(category => category.slug)
+                .join(" ")}`}
+            >
+              <div className="property-container">
+                <GatsbyImage
+                  className={"slide-background"}
+                  image={
+                    property.node.featuredImage.node.localFile.childImageSharp
+                      .gatsbyImageData
+                  }
+                  alt={"slide"}
+                />
+                <Link to={property.node.slug}>
+                  <div>
+                    <h3>{property.node.title}</h3>
+                    <p>{property.node.propertyInfo.propertyLocation}</p>
                   </div>
-                </div>
-              ))}
-            </ul>
-          </GridMain>
-        </>
-    )
-
+                </Link>
+              </div>
+            </div>
+          ))}
+        </ul>
+      </GridMain>
+    </>
+  )
 }
 
 const GridMain = styled.section`
@@ -124,7 +131,7 @@ const GridMain = styled.section`
     z-index: 4;
     li {
       color: #474747;
-      font-family: 'Carlito', sans-serif;
+      font-family: "Carlito", sans-serif;
       font-weight: 700;
       font-size: 17px;
       padding-left: 20px;
@@ -154,7 +161,7 @@ const GridMain = styled.section`
       max-width: 100% !important;
       z-index: 1;
       opacity: 1;
-      transition-duration: .5s;
+      transition-duration: 0.5s;
       > div {
         height: 100%;
         width: 100%;
@@ -183,10 +190,10 @@ const GridMain = styled.section`
       text-decoration: none;
       z-index: 2;
       opacity: 0;
-      transition-duration: .5s;
+      transition-duration: 0.5s;
     }
     h3 {
-      font-family: 'Pathway Gothic One',sans-serif;
+      font-family: "Pathway Gothic One", sans-serif;
       text-align: center;
       font-size: 30px;
       letter-spacing: 1.5px;
@@ -194,7 +201,7 @@ const GridMain = styled.section`
       text-transform: uppercase;
     }
     p {
-      font-family: 'Pathway Gothic One',sans-serif;
+      font-family: "Pathway Gothic One", sans-serif;
       text-align: center;
       font-size: 16px;
       font-weight: 400;
@@ -208,12 +215,12 @@ const GridMain = styled.section`
       }
     }
   }
-  @media(max-width:1200px) {
+  @media (max-width: 1200px) {
     .filter-item {
       width: 50%;
     }
   }
-  @media(max-width:767px) {
+  @media (max-width: 767px) {
     padding: 0 10px;
     ul.project-cats {
       flex-wrap: wrap;
@@ -229,7 +236,7 @@ const GridMain = styled.section`
       a {
         opacity: 1 !important;
         color: #fff !important;
-        background-color: rgba(0,0,0,.5);
+        background-color: rgba(0, 0, 0, 0.5);
       }
       h3 {
         color: #fff !important;
