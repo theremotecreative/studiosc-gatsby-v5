@@ -122,6 +122,7 @@ const ProjectMain = styled.div`
     margin-bottom: 30px;
     margin: auto;
     padding: 0 28px;
+    max-width: 1280px;
 
     .top-info-left {
       flex: 1.6;
@@ -141,9 +142,10 @@ const ProjectMain = styled.div`
 
     .top-info-right {
       flex: 1;
+      display: none;
 
       p {
-        font-size: 14px;
+        font-size: 16px;
         color: #555;
       }
     }
@@ -164,8 +166,10 @@ const ProjectMain = styled.div`
     grid-template-columns: 1fr 0.6fr 0.8fr;
     gap: 20px;
     margin-top: 50px;
-    margin: auto;
     padding: 0 28px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1280px;
 
     .info-left {
       h2 {
@@ -175,7 +179,7 @@ const ProjectMain = styled.div`
       }
 
       .description {
-        font-size: 14px;
+        font-size: 16px;
         color: #333;
       }
     }
@@ -201,7 +205,7 @@ const ProjectMain = styled.div`
         li {
           display: flex;
           justify-content: space-between;
-          font-size: 14px;
+          font-size: 16px;
           padding: 17px 8px;
           border-top: 1px solid #5F5F5F;
           margin-top: 0px;
@@ -239,8 +243,10 @@ const ProjectMain = styled.div`
 
   .gutenberg-content {
     margin-top: 40px;
-    margin: auto;
     padding: 0 28px;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
 
     h1, h2, h3, h4, h5, h6 {
       font-family: "Roboto", sans-serif;
@@ -249,7 +255,7 @@ const ProjectMain = styled.div`
     }
 
     p {
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.6;
       margin-bottom: 20px;
     }
@@ -272,6 +278,10 @@ const ProjectMain = styled.div`
   .back-to-projects {
     margin-top: 30px;
     text-align: right;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 28px;
 
     a {
       display: inline-block;
@@ -279,7 +289,7 @@ const ProjectMain = styled.div`
       color: #fff;
       text-decoration: none;
       padding: 10px 16px;
-      font-size: 14px;
+      font-size: 16px;
       transition: background-color 0.3s;
       font-weight: 600;
 
