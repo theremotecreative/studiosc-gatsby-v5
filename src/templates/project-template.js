@@ -407,6 +407,14 @@ const ProjectMain = styled.div`
     .mobile-padding{
         padding: 0 50px;
     }
+
+    .img-less-height{
+      height: 100%;
+
+      img{
+        height: auto;
+      }
+    }
   }
 
   @media (max-width: 480px){
