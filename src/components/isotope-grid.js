@@ -3,6 +3,7 @@ import { useStaticQuery, graphql, Link } from "gatsby";
 import styled from "styled-components";
 import { GatsbyImage } from "gatsby-plugin-image";
 import Isotope from "isotope-layout/js/isotope";
+import imagesLoaded from "imagesloaded"; // Ensure Isotope waits for images
 
 const IsoGrid = () => {
   const isotope = React.useRef();
@@ -15,6 +16,12 @@ const IsoGrid = () => {
       itemSelector: ".filter-item",
       layoutMode: "fitRows",
     });
+
+    // Ensure Isotope waits for images & text to load before calculating positions
+    imagesLoaded(".filter-container", function () {
+      isotope.current.layout();
+    });
+
     return () => isotope.current.destroy();
   }, []);
 
@@ -168,6 +175,10 @@ const GridMain = styled.section`
   max-width: 100%;
   padding: 0 30px;
 
+  @media (max-width: 767px) {
+    padding: 0 10px !important;
+  }
+
   ul.project-cats {
     list-style: none;
     display: flex;
@@ -176,6 +187,13 @@ const GridMain = styled.section`
     align-items: center;
     padding: 0 20px;
     margin: 0;
+
+    @media (max-width: 767px) {
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      margin-top: 30px !important;
+      row-gap: 5px;
+    }
 
     li {
       color: #474747;
@@ -189,6 +207,11 @@ const GridMain = styled.section`
         cursor: pointer;
       }
 
+      @media (max-width: 767px) {
+        font-weight: 600;
+        font-size: 15px;
+      }
+
       ul.size-cats {
         list-style: none;
         display: none;
@@ -199,11 +222,20 @@ const GridMain = styled.section`
         top: 21px;
         z-index: 3;
 
+        @media (max-width: 767px) {
+          top: 19px;
+        }
+
         li {
           font-size: 13px;
           padding: 0 4px;
           text-transform: uppercase;
           display: inline-block;
+
+          @media (max-width: 767px) {
+            font-weight: 300;
+            font-size: 12px;
+          }
 
           &:hover {
             cursor: pointer;
@@ -216,6 +248,10 @@ const GridMain = styled.section`
   .filter-container {
     display: flex;
     flex-wrap: wrap;
+
+    @media (max-width: 767px) {
+      margin-top: -5px;
+    }
 
     .filter-item {
       width: 33%;
@@ -288,24 +324,25 @@ const GridMain = styled.section`
       }
     }
 
-  @media (max-width: 1200px) {
+    @media (max-width: 1200px) {
     .filter-item {
       width: 50%;
     }
   }
 
   @media (max-width: 767px) {
-    padding: 0 10px;
-
-    ul.project-cats {
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 30px;
-    }
 
     .filter-item {
       width: 100%;
-      height: 300px;
+      height: 330px;
+      left: 0 !important;
+
+      .property-container {
+
+        .image-container {
+          height: 270px;
+        }
+      }
 
       .gatsby-image-wrapper {
         opacity: 1 !important;
@@ -318,9 +355,10 @@ const GridMain = styled.section`
       }
 
       h3 {
-        color: #fff !important;
+        /*color: #fff !important;*/
       }
     }
+  
   }
 `;
 
