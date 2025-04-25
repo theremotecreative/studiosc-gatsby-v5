@@ -388,6 +388,10 @@ const ProjectMain = styled.div`
         gap: 0;
     }
 
+    .wp-block-columns .wp-block-image {
+      margin-bottom: 1em;
+    }
+
   }
 
   @media (max-width: 768px) {
