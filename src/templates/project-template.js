@@ -325,6 +325,38 @@ const ProjectMain = styled.div`
     }
   }
 
+  .wp-block-columns {
+    align-items: stretch !important;   /* Columns match heights */
+  }
+  .wp-block-columns .wp-block-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+  .wp-block-columns .wp-block-image {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 0;
+  }
+  .wp-block-columns .wp-block-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .wp-block-columns .wp-block-image .gatsby-image-wrapper{
+    height: 100%;
+    width: 100%;
+  }
+
+  @media (min-width: 782px) {
+    .wp-block-column:not(:first-child) {
+      margin-left: 1.75em;
+    }
+  }
+
   @media (max-width: 992px) {
 
     .property-info{
