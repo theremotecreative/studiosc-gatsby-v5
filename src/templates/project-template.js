@@ -302,7 +302,7 @@ const ProjectMain = styled.div`
   .two-column-grid{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1em;
+    gap: 1.75em;
   }
 
   .one-em-gap {
@@ -311,6 +311,10 @@ const ProjectMain = styled.div`
 
   .margin-top-80{
     margin-top: 80px;
+  }
+
+  .margin-top-1_75em{
+    margin-top: 1.75em;
   }
 
   .padding-right-10-percent{
@@ -346,9 +350,20 @@ const ProjectMain = styled.div`
     display: block;
   }
 
+  .wp-block-columns .img-margin-bottom, .wp-block-group .img-margin-bottom{
+    margin-bottom: 1.75em;
+  }
+
   .wp-block-columns .wp-block-image .gatsby-image-wrapper{
     height: 100%;
     width: 100%;
+  }
+
+  .height-50{
+    height: 50%;
+    display: flex !important;
+    align-items: end !important;
+    flex: initial !important;
   }
 
   @media (min-width: 782px) {
