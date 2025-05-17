@@ -309,6 +309,10 @@ const ProjectMain = styled.div`
     gap: 1em;
   }
 
+  .no-margin-bottom{
+    margin-bottom: 0 !important;
+  }
+
   .margin-top-80{
     margin-top: 80px;
   }
@@ -319,6 +323,14 @@ const ProjectMain = styled.div`
 
   .padding-right-10-percent{
     padding-right: 10%;
+  }
+
+  .wp-block-columns .wp-block-columns{
+    margin-bottom: 0;
+  }
+
+  .column-row{
+    flex-direction: row;
   }
 
   .img-less-height{
@@ -361,6 +373,13 @@ const ProjectMain = styled.div`
 
   .height-50{
     height: 50%;
+    display: flex !important;
+    align-items: end !important;
+    flex: initial !important;
+  }
+
+  .height-60{
+    height: 60%;
     display: flex !important;
     align-items: end !important;
     flex: initial !important;
