@@ -118,14 +118,13 @@ const IsoGrid = () => {
           <li onClick={handleChildCategoryClick("s")}>S</li>
           <li onClick={handleChildCategoryClick("m")}>M</li>
           <li onClick={handleChildCategoryClick("l")}>L</li>
-          <li onClick={handleChildCategoryClick("xl")}>XL</li>
         </ul>
         <li onClick={handleParentCategoryClick("residential")}>
           Residential
         </li>
         <li onClick={handleParentCategoryClick("office")}>Office</li>
-        <li onClick={handleParentCategoryClick("adaptive-reuse")}>
-          Adaptive Reuse
+        <li onClick={handleParentCategoryClick("civic")}>
+          Civic
         </li>
         <li onClick={handleParentCategoryClick("commerce")}>Commerce</li>
       </ul>
@@ -218,7 +217,7 @@ const GridMain = styled.section`
         flex-direction: column;
         margin: 0;
         position: absolute;
-        left: 32px;
+        left: 46px;
         top: 21px;
         z-index: 3;
 
@@ -270,23 +269,27 @@ const GridMain = styled.section`
           overflow: hidden;
           height: 360px;
 
+          .hover-image,
           .featured-image {
-            height: 100%;
             width: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease;
-          }
-
-          .hover-image {
+            height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            object-fit: cover;
+            transition: all 1.5s ease;
+          }
+
+          .hover-image {
+            z-index: 2;
+            opacity: 0;
             background-size: cover;
             background-position: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+          }
+
+          .featured-image {
+            z-index: 1;
+            opacity: 1;
           }
         }
 
@@ -325,41 +328,40 @@ const GridMain = styled.section`
     }
 
     @media (max-width: 1200px) {
-    .filter-item {
-      width: 50%;
+      .filter-item {
+        width: 50%;
+      }
     }
-  }
 
-  @media (max-width: 767px) {
+    @media (max-width: 767px) {
+      .filter-item {
+        width: 100%;
+        height: 330px;
+        left: 0 !important;
 
-    .filter-item {
-      width: 100%;
-      height: 330px;
-      left: 0 !important;
+        .property-container {
+          .image-container {
+            height: 270px;
+          }
+        }
 
-      .property-container {
+        .gatsby-image-wrapper {
+          opacity: 1 !important;
+        }
 
-        .image-container {
-          height: 270px;
+        a {
+          opacity: 1 !important;
+          color: #fff !important;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        h3 {
+          /* color: #fff !important; */
         }
       }
-
-      .gatsby-image-wrapper {
-        opacity: 1 !important;
-      }
-
-      a {
-        opacity: 1 !important;
-        color: #fff !important;
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-
-      h3 {
-        /*color: #fff !important;*/
-      }
     }
-  
   }
 `;
+
 
 export default IsoGrid;
