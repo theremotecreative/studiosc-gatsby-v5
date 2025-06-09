@@ -118,6 +118,7 @@ const IsoGrid = () => {
           <li onClick={handleChildCategoryClick("s")}>S</li>
           <li onClick={handleChildCategoryClick("m")}>M</li>
           <li onClick={handleChildCategoryClick("l")}>L</li>
+          <li onClick={handleChildCategoryClick("xl-interiors")}>XL-INTERIORS</li>
         </ul>
         <li onClick={handleParentCategoryClick("residential")}>
           Residential
@@ -217,7 +218,8 @@ const GridMain = styled.section`
         flex-direction: column;
         margin: 0;
         position: absolute;
-        left: 46px;
+        width: max-content;
+        left: 8px;
         top: 21px;
         z-index: 3;
 
@@ -226,7 +228,7 @@ const GridMain = styled.section`
         }
 
         li {
-          font-size: 13px;
+          font-size: 11px;
           padding: 0 4px;
           text-transform: uppercase;
           display: inline-block;
