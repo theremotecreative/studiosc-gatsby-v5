@@ -205,7 +205,7 @@ const GridMain = styled.section`
     p {
       font-family: Roboto;
       font-size: 16px;
-      text-transform: uppercase;
+      /*text-transform: uppercase;*/
       padding: 8px 0;
       border-bottom: 1px solid #242424;
       display: inline-block;
@@ -247,7 +247,7 @@ const GridMain = styled.section`
 
   .press-content .details p{
     border-bottom: none;
-    font-size: 12px;
+    font-size: 10px;
     margin-bottom: 0;
     padding-bottom: 11px;
   }
