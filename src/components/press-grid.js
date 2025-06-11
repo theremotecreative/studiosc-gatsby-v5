@@ -76,11 +76,29 @@ const PressGrid = () => {
   return (
     <>
       <GridMain>
-        <ul className="project-cats">
-          <li onClick={handleFilterKeyChange("*")}>All</li>
-          <li onClick={handleFilterKeyChange("publication")}>Publications</li>
-          <li onClick={handleFilterKeyChange("award")}>Awards</li>
-        </ul>
+        <div className="project-cats-container">
+          <h3>Press</h3>
+          <ul className="project-cats">
+            <li
+              className={filterKey === "*" ? "active" : ""}
+              onClick={handleFilterKeyChange("*")}
+            >
+              All
+            </li>
+            <li
+              className={filterKey === "publication" ? "active" : ""}
+              onClick={handleFilterKeyChange("publication")}
+            >
+              Publications
+            </li>
+            <li
+              className={filterKey === "award" ? "active" : ""}
+              onClick={handleFilterKeyChange("award")}
+            >
+              Awards
+            </li>
+          </ul>
+        </div>
         <ul className="filter-container">
           {pressMap.map((press) => (
             <div
@@ -133,13 +151,33 @@ const PressGrid = () => {
 const GridMain = styled.section`
   width: 100%;
   padding: 0 30px;
+
+  .project-cats-container{
+  display: grid;
+  grid-template-columns: auto 1fr;
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  padding: 0 10px;
+  align-items: end;
+
+    h3{
+      font-size: 42px;
+      font-weight: bold;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+  }
+  
   ul.project-cats {
     list-style: none;
     display: flex;
     width: 100%;
     justify-content: flex-end;
-    align-items: center;
-    padding: 0 20px;
+    align-items: flex-end;
+    padding: 0 0 0 20px;
     margin: 0;
     margin-top: -25px;
     position: relative;
@@ -147,14 +185,18 @@ const GridMain = styled.section`
     li {
       color: #474747;
       font-family: "Carlito", sans-serif;
-      font-weight: 700;
-      font-size: 17px;
-      padding-left: 20px;
+      font-size: 16px;
       margin: 0;
       line-height: 3;
+      border-bottom: solid 1px #dedede;
+      padding-left: 45px;
+      padding-right: 45px;
       &:hover {
         cursor: pointer;
       }
+    }
+    .active{
+      border-color: #474747;
     }
   }
   h1 {
