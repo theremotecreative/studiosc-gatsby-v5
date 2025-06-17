@@ -385,6 +385,10 @@ const ProjectMain = styled.div`
     flex: initial !important;
   }
 
+  .align-end{
+    justify-content: end;
+  }
+
   @media (min-width: 782px) {
     .wp-block-column:not(:first-child) {
       margin-left: 1.75em;
