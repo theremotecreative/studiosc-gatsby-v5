@@ -385,7 +385,7 @@ const ProjectMain = styled.div`
     flex: initial !important;
   }
 
-  .wp-block-column .align-end{
+  .wp-block-columns .align-end{
     justify-content: end;
   }
 
