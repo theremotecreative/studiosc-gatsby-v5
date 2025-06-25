@@ -3,40 +3,58 @@ import { useStaticQuery, graphql, Link } from "gatsby";
 import styled from "styled-components";
 import { GatsbyImage } from "gatsby-plugin-image";
 import Isotope from "isotope-layout/js/isotope";
-import imagesLoaded from "imagesloaded"; // Ensure Isotope waits for images
+import imagesLoaded from "imagesloaded";
+import { globalHistory } from "@reach/router";
 
 const IsoGrid = () => {
   const isotope = React.useRef();
   const [filterKey, setFilterKey] = useState("*");
   const [parentCategory, setParentCategory] = useState(null);
 
-  // Initialize Isotope
   useEffect(() => {
     isotope.current = new Isotope(".filter-container", {
       itemSelector: ".filter-item",
       layoutMode: "fitRows",
     });
 
-    // Ensure Isotope waits for images & text to load before calculating positions
-    imagesLoaded(".filter-container", function () {
+    const savedFilter = localStorage.getItem("projectFilterKey");
+    if (savedFilter) {
+      setFilterKey(savedFilter);
+      setParentCategory(savedFilter === "*" ? null : savedFilter);
+    }
+
+    imagesLoaded(".filter-container", () => {
       isotope.current.layout();
     });
 
     return () => isotope.current.destroy();
   }, []);
 
-  // Apply filtering
   useEffect(() => {
-    isotope.current.arrange({
-      filter: filterKey === "*" ? `*` : `.${filterKey}`,
+    const unlisten = globalHistory.listen(({ location }) => {
+      const isLeavingProjects = !location.pathname.startsWith("/projects/");
+      if (isLeavingProjects) {
+        localStorage.removeItem("projectFilterKey");
+      } else {
+        const savedFilter = localStorage.getItem("projectFilterKey") || "*";
+        setFilterKey(savedFilter);
+        setParentCategory(savedFilter === "*" ? null : savedFilter);
+      }
     });
+
+    return () => unlisten();
+  }, []);
+
+  useEffect(() => {
+    if (isotope.current) {
+      isotope.current.arrange({
+        filter: filterKey === "*" ? "*" : `.${filterKey}`,
+      });
+    }
   }, [filterKey]);
 
-  // Handle submenus for parent categories
   useEffect(() => {
-    const developmentItem = document.querySelector(
-      ".project-cats > li:nth-child(2)"
-    );
+    const developmentItem = document.querySelector(".project-cats > li:nth-child(2)");
     const sizeSubMenu = document.querySelector(".size-cats");
 
     if (parentCategory === "development" && developmentItem && sizeSubMenu) {
@@ -47,18 +65,18 @@ const IsoGrid = () => {
     }
   }, [parentCategory]);
 
-  // Handle parent category clicks
   const handleParentCategoryClick = (key) => () => {
-    setParentCategory(key === parentCategory ? null : key);
-    setFilterKey(key === parentCategory ? "*" : key);
+    const newKey = key === parentCategory ? "*" : key;
+    setParentCategory(newKey === "*" ? null : newKey);
+    setFilterKey(newKey);
+    localStorage.setItem("projectFilterKey", newKey);
   };
 
-  // Handle child category clicks
   const handleChildCategoryClick = (key) => () => {
     setFilterKey(key);
+    localStorage.setItem("projectFilterKey", key);
   };
 
-  // Fetch data using GraphQL
   const data = useStaticQuery(graphql`
     query {
       allWpProperty(sort: { fields: date, order: DESC }) {
@@ -108,46 +126,90 @@ const IsoGrid = () => {
 
   return (
     <GridMain>
-      {/* Categories */}
       <ul className="project-cats">
-        <li onClick={handleParentCategoryClick("*")}>All</li>
-        <li onClick={handleParentCategoryClick("development")}>
+        <li
+          className={filterKey === "*" ? "active" : ""}
+          onClick={handleParentCategoryClick("*")}
+        >
+          All
+        </li>
+
+        <li
+          className={filterKey === "development" ? "active" : ""}
+          onClick={handleParentCategoryClick("development")}
+        >
           Development
         </li>
+
         <ul className="size-cats">
-          <li onClick={handleChildCategoryClick("s")}>S</li>
-          <li onClick={handleChildCategoryClick("m")}>M</li>
-          <li onClick={handleChildCategoryClick("l")}>L</li>
-          <li onClick={handleChildCategoryClick("xl-interiors")}>XL-INTERIORS</li>
+          <li
+            className={filterKey === "s" ? "active" : ""}
+            onClick={handleChildCategoryClick("s")}
+          >
+            S
+          </li>
+          <li
+            className={filterKey === "m" ? "active" : ""}
+            onClick={handleChildCategoryClick("m")}
+          >
+            M
+          </li>
+          <li
+            className={filterKey === "l" ? "active" : ""}
+            onClick={handleChildCategoryClick("l")}
+          >
+            L
+          </li>
+          <li
+            className={filterKey === "xl-interiors" ? "active" : ""}
+            onClick={handleChildCategoryClick("xl-interiors")}
+          >
+            XL-INTERIORS
+          </li>
         </ul>
-        <li onClick={handleParentCategoryClick("residential")}>
+
+        <li
+          className={filterKey === "residential" ? "active" : ""}
+          onClick={handleParentCategoryClick("residential")}
+        >
           Residential
         </li>
-        <li onClick={handleParentCategoryClick("office")}>Office</li>
-        <li onClick={handleParentCategoryClick("civic")}>
+
+        <li
+          className={filterKey === "office" ? "active" : ""}
+          onClick={handleParentCategoryClick("office")}
+        >
+          Office
+        </li>
+
+        <li
+          className={filterKey === "civic" ? "active" : ""}
+          onClick={handleParentCategoryClick("civic")}
+        >
           Civic
         </li>
-        <li onClick={handleParentCategoryClick("commerce")}>Commerce</li>
+
+        <li
+          className={filterKey === "commerce" ? "active" : ""}
+          onClick={handleParentCategoryClick("commerce")}
+        >
+          Commerce
+        </li>
       </ul>
 
-      {/* Properties */}
+
       <ul className="filter-container">
         {propertyMap.map((property) => (
           <Link
             to={property.node.slug}
             key={property.node.slug}
-            className={`filter-item ${property.node.categories.nodes
-              .map((category) => category.slug)
-              .join(" ")}`}
+            className={`filter-item ${property.node.categories.nodes.map((category) => category.slug).join(" ")}`}
           >
             <div className="property-container">
               <div className="image-container">
                 <GatsbyImage
                   className="featured-image"
-                  image={
-                    property.node.featuredImage.node.localFile.childImageSharp
-                      .gatsbyImageData
-                  }
+                  image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
                   alt={property.node.title}
                 />
                 <div
@@ -207,6 +269,10 @@ const GridMain = styled.section`
         cursor: pointer;
       }
 
+      &.active {
+        font-weight: 400;
+      }
+
       @media (max-width: 767px) {
         font-weight: 600;
         font-size: 15px;
@@ -219,8 +285,8 @@ const GridMain = styled.section`
         margin: 0;
         position: absolute;
         width: max-content;
-        left: 8px;
-        top: 21px;
+        left: -4px;
+        top: 25px;
         z-index: 3;
 
         @media (max-width: 767px) {
@@ -228,7 +294,7 @@ const GridMain = styled.section`
         }
 
         li {
-          font-size: 11px;
+          font-size: 14px;
           padding: 0 4px;
           text-transform: uppercase;
           display: inline-block;
@@ -364,6 +430,5 @@ const GridMain = styled.section`
     }
   }
 `;
-
 
 export default IsoGrid;
