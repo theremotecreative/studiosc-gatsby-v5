@@ -11,15 +11,24 @@ const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
     return(
         <Layout isHomePage>
             <Seo 
-            title={queryContent.seo.title} 
-            description={queryContent.seo.metaDesc}
-            metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
+                title={queryContent.seo.title} 
+                description={queryContent.seo.metaDesc}
+                metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
             />
             <DesktopImage>
-                <GatsbyImage image={featuredImage.childImageSharp.gatsbyImageData} alt={'StudiosC - Architecture Studio based in Brooklyn, NY'} />
+                <GatsbyImage 
+                    image={featuredImage.childImageSharp.gatsbyImageData} 
+                    alt={'StudiosC - Architecture Studio based in Brooklyn, NY'} 
+                />
             </DesktopImage>
             <MobileImage>
-                <GatsbyImage image={mobileImage.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={mobileImage.featuredImage.node.title} />
+                <GatsbyImage 
+                    image={mobileImage.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
+                    alt={mobileImage.featuredImage.node.title}
+                    style={{ height: "100vh", width: "100%" }}
+                    imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
+                    sizes="100vw"
+                />
             </MobileImage>
         </Layout>
     )
@@ -53,6 +62,7 @@ const MobileImage = styled.div`
 
     .gatsby-image-wrapper {
         height: 100vh;
+        width: 100%;
     }
 
     img {
@@ -79,7 +89,7 @@ export const pageQuery = graphql`
                 formats: [AUTO, WEBP, AVIF]
               )
             }
-          }
+        }
         queryContent: wpPage(databaseId: {eq: 224}) {
             seo {
                 title
@@ -101,10 +111,13 @@ export const pageQuery = graphql`
                     title
                     localFile {
                         childImageSharp {
-                            gatsbyImageData (
-                                width: 800
-                                placeholder: BLURRED
-                                formats: [AUTO, WEBP, AVIF]
+                            gatsbyImageData(
+                              width: 1600
+                              quality: 100
+                              placeholder: BLURRED
+                              layout: FULL_WIDTH
+                              breakpoints: [375, 667, 800, 1200, 1600]
+                              formats: [AUTO, WEBP, AVIF]
                             )
                         }
                     }
