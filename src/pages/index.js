@@ -7,33 +7,38 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
+  // Fallback to desktop image if mobile image is missing
+  const mobileImageData = mobileImage?.featuredImage?.node?.localFile?.childImageSharp?.gatsbyImageData
+    || featuredImage.childImageSharp.gatsbyImageData;
 
-    return(
-        <Layout isHomePage>
-            <Seo 
-                title={queryContent.seo.title} 
-                description={queryContent.seo.metaDesc}
-                metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
-            />
-            <DesktopImage>
-                <GatsbyImage 
-                    image={featuredImage.childImageSharp.gatsbyImageData} 
-                    alt={'StudiosC - Architecture Studio based in Brooklyn, NY'} 
-                />
-            </DesktopImage>
-            <MobileImage>
-                <GatsbyImage 
-                    image={mobileImage.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
-                    alt={mobileImage.featuredImage.node.title}
-                    style={{ height: "100vh", width: "100%" }}
-                    imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
-                    sizes="100vw"
-                />
-            </MobileImage>
-        </Layout>
-    )
+  const mobileImageAlt = mobileImage?.featuredImage?.node?.title || "StudiosC - Architecture Studio based in Brooklyn, NY";
 
+  return (
+    <Layout isHomePage>
+      <Seo 
+        title={queryContent.seo.title} 
+        description={queryContent.seo.metaDesc}
+        metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
+      />
+      <DesktopImage>
+        <GatsbyImage 
+          image={featuredImage.childImageSharp.gatsbyImageData} 
+          alt="StudiosC - Architecture Studio based in Brooklyn, NY"
+        />
+      </DesktopImage>
+      <MobileImage>
+        <GatsbyImage 
+          image={mobileImageData}
+          alt={mobileImageAlt}
+          style={{ height: "100vh", width: "100%" }}
+          imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
+          sizes="100vw"
+        />
+      </MobileImage>
+    </Layout>
+  )
 }
+
 
 const DesktopImage = styled.div`
     height: 100vh;
