@@ -207,11 +207,14 @@ const IsoGrid = () => {
           >
             <div className="property-container">
               <div className="image-container">
-                <GatsbyImage
-                  className="featured-image"
-                  image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
-                  alt={property.node.title}
-                />
+                {property.node.featuredImage?.node?.localFile?.childImageSharp?.gatsbyImageData && (
+                  <GatsbyImage
+                    className="featured-image"
+                    image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
+                    alt={property.node.title || "Project Image"}
+                  />
+                )}
+
                 <div
                   className="hover-image"
                   style={{
