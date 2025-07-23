@@ -1,7 +1,7 @@
 import React from "react"
 import { graphql } from 'gatsby'
 import styled from 'styled-components'
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, getSrc } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
@@ -13,12 +13,15 @@ const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
 
   const mobileImageAlt = mobileImage?.featuredImage?.node?.title || "StudiosC - Architecture Studio based in Brooklyn, NY";
 
+  // Extract og:image URL for SEO from gatsbyImageData
+  const metaImage = getSrc(queryContent.seo.opengraphImage.localFile.childImageSharp.gatsbyImageData)
+
   return (
     <Layout isHomePage>
       <Seo 
         title={queryContent.seo.title} 
         description={queryContent.seo.metaDesc}
-        metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
+        metaImage={metaImage}
       />
       <DesktopImage>
         <GatsbyImage 
@@ -102,9 +105,11 @@ export const pageQuery = graphql`
                 opengraphImage {
                   localFile {
                     childImageSharp {
-                      fluid(maxWidth: 1920) {
-                        ...GatsbyImageSharpFluid_withWebp
-                      }
+                      gatsbyImageData(
+                        width: 1200
+                        placeholder: BLURRED
+                        formats: [AUTO, WEBP, AVIF]
+                      )
                     }
                   }
                 }

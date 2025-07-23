@@ -96,7 +96,7 @@ const ProjectTemplate = ({ data }) => {
           <div className="gutenberg-content">
             <div
               dangerouslySetInnerHTML={{
-                __html: post.content, // Render Gutenberg content
+                __html: post.content,
               }}
             />
           </div>
@@ -508,7 +508,7 @@ export const pageQuery = graphql`
     post: wpProperty(id: { eq: $id }) {
       id
       title
-      content # Gutenberg content
+      content
       seo {
         title
         metaDesc

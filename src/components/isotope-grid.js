@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import styled from "styled-components";
-import { GatsbyImage } from "gatsby-plugin-image";
+import { GatsbyImage, getSrc } from "gatsby-plugin-image";
 import Isotope from "isotope-layout/js/isotope";
 import imagesLoaded from "imagesloaded";
 import { globalHistory } from "@reach/router";
@@ -127,116 +127,60 @@ const IsoGrid = () => {
   return (
     <GridMain>
       <ul className="project-cats">
-        <li
-          className={filterKey === "*" ? "active" : ""}
-          onClick={handleParentCategoryClick("*")}
-        >
-          All
-        </li>
-
-        <li
-          className={filterKey === "development" ? "active" : ""}
-          onClick={handleParentCategoryClick("development")}
-        >
-          Development
-        </li>
-
+        <li className={filterKey === "*" ? "active" : ""} onClick={handleParentCategoryClick("*")}>All</li>
+        <li className={filterKey === "development" ? "active" : ""} onClick={handleParentCategoryClick("development")}>Development</li>
         <ul className="size-cats">
-          <li
-            className={filterKey === "s" ? "active" : ""}
-            onClick={handleChildCategoryClick("s")}
-          >
-            S
-          </li>
-          <li
-            className={filterKey === "m" ? "active" : ""}
-            onClick={handleChildCategoryClick("m")}
-          >
-            M
-          </li>
-          <li
-            className={filterKey === "l" ? "active" : ""}
-            onClick={handleChildCategoryClick("l")}
-          >
-            L
-          </li>
-          <li
-            className={filterKey === "xl-interiors" ? "active" : ""}
-            onClick={handleChildCategoryClick("xl-interiors")}
-          >
-            XL-INTERIORS
-          </li>
+          <li className={filterKey === "s" ? "active" : ""} onClick={handleChildCategoryClick("s")}>S</li>
+          <li className={filterKey === "m" ? "active" : ""} onClick={handleChildCategoryClick("m")}>M</li>
+          <li className={filterKey === "l" ? "active" : ""} onClick={handleChildCategoryClick("l")}>L</li>
+          <li className={filterKey === "xl-interiors" ? "active" : ""} onClick={handleChildCategoryClick("xl-interiors")}>XL-INTERIORS</li>
         </ul>
-
-        <li
-          className={filterKey === "residential" ? "active" : ""}
-          onClick={handleParentCategoryClick("residential")}
-        >
-          Residential
-        </li>
-
-        <li
-          className={filterKey === "office" ? "active" : ""}
-          onClick={handleParentCategoryClick("office")}
-        >
-          Office
-        </li>
-
-        <li
-          className={filterKey === "civic" ? "active" : ""}
-          onClick={handleParentCategoryClick("civic")}
-        >
-          Civic
-        </li>
-
-        <li
-          className={filterKey === "commerce" ? "active" : ""}
-          onClick={handleParentCategoryClick("commerce")}
-        >
-          Commerce
-        </li>
+        <li className={filterKey === "residential" ? "active" : ""} onClick={handleParentCategoryClick("residential")}>Residential</li>
+        <li className={filterKey === "office" ? "active" : ""} onClick={handleParentCategoryClick("office")}>Office</li>
+        <li className={filterKey === "civic" ? "active" : ""} onClick={handleParentCategoryClick("civic")}>Civic</li>
+        <li className={filterKey === "commerce" ? "active" : ""} onClick={handleParentCategoryClick("commerce")}>Commerce</li>
       </ul>
 
-
       <ul className="filter-container">
-        {propertyMap.map((property) => (
-          <Link
-            to={property.node.slug}
-            key={property.node.slug}
-            className={`filter-item ${property.node.categories.nodes.map((category) => category.slug).join(" ")}`}
-          >
-            <div className="property-container">
-              <div className="image-container">
-                {property.node.featuredImage?.node?.localFile?.childImageSharp?.gatsbyImageData && (
-                  <GatsbyImage
-                    className="featured-image"
-                    image={property.node.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
-                    alt={property.node.title || "Project Image"}
-                  />
-                )}
+        {propertyMap.map(({ node: property }) => {
+          const fallbackImage = "https://via.placeholder.com/800x400";
+          const hoverImage =
+            property.propertyInfo.secondaryImage?.localFile?.childImageSharp?.gatsbyImageData
+              ? getSrc(property.propertyInfo.secondaryImage.localFile.childImageSharp.gatsbyImageData)
+              : fallbackImage;
 
-                <div
-                  className="hover-image"
-                  style={{
-                    backgroundImage: property.node.propertyInfo.secondaryImage
-                      ? `url(${property.node.propertyInfo.secondaryImage.localFile.childImageSharp.gatsbyImageData.images.fallback.src})`
-                      : `url('https://via.placeholder.com/800x400')`,
-                  }}
-                ></div>
+          return (
+            <Link
+              to={property.slug}
+              key={property.slug}
+              className={`filter-item ${property.categories.nodes.map((cat) => cat.slug).join(" ")}`}
+            >
+              <div className="property-container">
+                <div className="image-container">
+                  {property.featuredImage?.node?.localFile?.childImageSharp?.gatsbyImageData && (
+                    <GatsbyImage
+                      className="featured-image"
+                      image={property.featuredImage.node.localFile.childImageSharp.gatsbyImageData}
+                      alt={property.title || "Project Image"}
+                    />
+                  )}
+                  <div className="hover-image" style={{ backgroundImage: `url(${hoverImage})` }} />
+                </div>
+                <div className="info">
+                  <h3>{property.title} -</h3>
+                  <p>{property.propertyInfo.propertyLocation}</p>
+                </div>
               </div>
-              <div className="info">
-                <h3>{property.node.title} -</h3>
-                <p>{property.node.propertyInfo.propertyLocation}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </ul>
     </GridMain>
   );
 };
 
 const GridMain = styled.section`
+  /* ... (same styling as before) ... */
   max-width: 100%;
   padding: 0 30px;
 
