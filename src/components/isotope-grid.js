@@ -223,6 +223,8 @@ const GridMain = styled.section`
       @media (max-width: 767px) {
         font-weight: 600;
         font-size: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       ul.size-cats {
