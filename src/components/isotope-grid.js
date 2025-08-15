@@ -151,7 +151,7 @@ const IsoGrid = () => {
 
           return (
             <Link
-              to={property.slug}
+              to={`/projects/${property.slug}`}
               key={property.slug}
               className={`filter-item ${property.categories.nodes.map((cat) => cat.slug).join(" ")}`}
             >

@@ -7,48 +7,63 @@ import { GatsbyImage, getSrc } from "gatsby-plugin-image";
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 
-const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
+const IndexPage = ({ data }) => {
+  const featuredGatsby = data?.featuredImage?.childImageSharp?.gatsbyImageData;
+
   // Use mobile hero if present, otherwise fall back to desktop hero
   const mobileImageData =
-    mobileImage?.featuredImage?.node?.localFile?.childImageSharp
-      ?.gatsbyImageData || featuredImage.childImageSharp.gatsbyImageData;
+    data?.mobileImage?.featuredImage?.node?.localFile?.childImageSharp
+      ?.gatsbyImageData || featuredGatsby;
 
   const mobileImageAlt =
-    mobileImage?.featuredImage?.node?.title ||
+    data?.mobileImage?.featuredImage?.node?.title ||
     "StudiosC - Architecture Studio based in Brooklyn, NY";
 
-  // og:image for SEO
-  const metaImage = getSrc(
-    queryContent.seo.opengraphImage.localFile.childImageSharp.gatsbyImageData
-  );
+  // Safely compute og:image (fallback to featured hero, or omit)
+  const ogGatsby =
+    data?.queryContent?.seo?.opengraphImage?.localFile?.childImageSharp
+      ?.gatsbyImageData;
+
+  const metaImage =
+    (ogGatsby && getSrc(ogGatsby)) ||
+    (featuredGatsby && getSrc(featuredGatsby)) ||
+    undefined;
 
   return (
     <Layout isHomePage>
       <Seo
-        title={queryContent.seo.title}
-        description={queryContent.seo.metaDesc}
+        title={data?.queryContent?.seo?.title || "StudiosC"}
+        description={
+          data?.queryContent?.seo?.metaDesc ||
+          "Architecture Studio based in Brooklyn, NY"
+        }
         metaImage={metaImage}
       />
 
-      <DesktopImage>
-        <GatsbyImage
-          image={featuredImage.childImageSharp.gatsbyImageData}
-          alt="StudiosC - Architecture Studio based in Brooklyn, NY"
-          loading="eager"
-        />
-      </DesktopImage>
+      {featuredGatsby && (
+        <DesktopImage>
+          <GatsbyImage
+            image={featuredGatsby}
+            alt="StudiosC - Architecture Studio based in Brooklyn, NY"
+            loading="eager"
+          />
+        </DesktopImage>
+      )}
 
-      <MobileImage>
-        <GatsbyImage
-          image={mobileImageData}
-          alt={mobileImageAlt}
-          // force a larger srcset candidate on small screens to avoid upscaling a 100vh hero
-          sizes="(max-width: 767px) 2000px, 100vw"
-          loading="eager"
-          imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
-          style={{ height: "100vh", width: "100%" }}
-        />
-      </MobileImage>
+      {/* ✅ Keep this block exactly — it’s what prevents the blurry mobile hero */}
+      {mobileImageData && (
+        <MobileImage>
+          <GatsbyImage
+            image={mobileImageData}
+            alt={mobileImageAlt}
+            // force a larger srcset candidate on small screens to avoid upscaling a 100vh hero
+            sizes="(max-width: 767px) 2000px, 100vw"
+            loading="eager"
+            imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
+            style={{ height: "100vh", width: "100%" }}
+          />
+        </MobileImage>
+      )}
     </Layout>
   );
 };
@@ -97,7 +112,7 @@ const MobileImage = styled.div`
 export default IndexPage;
 
 export const pageQuery = graphql`
-  query {
+  query HomePageQuery {
     featuredImage: file(relativePath: { eq: "homepage-2024.jpg" }) {
       childImageSharp {
         gatsbyImageData(
@@ -135,7 +150,8 @@ export const pageQuery = graphql`
                 layout: FULL_WIDTH
                 quality: 100
                 placeholder: BLURRED
-                breakpoints: [480, 750, 1080, 1400, 1800, 2000, 2200]
+                # Big breakpoints so small phones still get a tall, crisp 100vh image
+                breakpoints: [480, 750, 1080, 1400, 1800, 2000, 2400]
                 formats: [AUTO, WEBP, AVIF]
               )
             }
