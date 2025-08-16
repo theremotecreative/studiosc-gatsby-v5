@@ -28,17 +28,19 @@ module.exports = {
           process.env.WPGRAPHQL_URL ||
           `https://studiosc.theremotecreative.com/graphql`,
         schema: {
-          requestConcurrency: 3, // lower = slower but safer for Netlify
+          requestConcurrency: 1, // lower = slower but safer for Netlify
           previewRequestConcurrency: 2,
         },
         type: {
           MediaItem: {
             localFile: {
-              maxFileSizeBytes: 5000000, // Skip images >5MB
-              requestConcurrency: 2,
+              maxFileSizeBytes: 4000000, // Skip images >4MB
+              requestConcurrency: 1,
             },
           },
         },
+        // Reuse previously downloaded media files during builds
+        preserveMediaFiles: true,
       },
     },
 
