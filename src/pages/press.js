@@ -23,7 +23,7 @@ const PressPage = ({ data: { queryContent } }) => {
         description={queryContent.seo.metaDesc}
         metaImage={metaImage}
       />
-      {/* <PressGrid /> */}
+      <PressGrid />
     </Layout>
   )
 }

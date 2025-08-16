@@ -22,7 +22,7 @@ const ProjectPage = ({ data }) => {
         description={seo?.metaDesc || "StudiosC projects"}
         metaImage={metaImage}
       />
-      {/* <IsoGrid /> */}
+      <IsoGrid />
     </Layout>
   )
 }
