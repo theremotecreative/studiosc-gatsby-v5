@@ -7,7 +7,7 @@
  */
 
 // Add this to ignore SSL errors for local development
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 module.exports = {
   flags: {
@@ -23,7 +23,9 @@ module.exports = {
     {
       resolve: `gatsby-source-wordpress`,
       options: {
-        url: process.env.WPGRAPHQL_URL || `https://studiosc.theremotecreative.com/graphql`,
+        url:
+          process.env.WPGRAPHQL_URL ||
+          `https://studiosc.theremotecreative.com/graphql`,
         schema: {
           requestConcurrency: 3, // lower = slower but safer for Netlify
           previewRequestConcurrency: 2,
@@ -55,7 +57,7 @@ module.exports = {
           `Pathway Gothic One:400`,
           `Lato:400`,
         ],
-        display: 'swap'
+        display: "swap",
       },
     },
     `gatsby-transformer-sharp`,
