@@ -1,12 +1,4 @@
 [build]
-  command = "GATSBY_CLOUD_IMAGE_CDN=0 GATSBY_CLOUD_FILE_CDN=0 gatsby build"
+  command = "gatsby build"
   publish = "public"
-  environment = { NODE_VERSION = "20", GATSBY_CPU_COUNT = "1" }
-
-[context.production.environment]
-  GATSBY_CLOUD_IMAGE_CDN = "0"
-  GATSBY_CLOUD_FILE_CDN = "0"
-
-[context.deploy-preview.environment]
-  GATSBY_CLOUD_IMAGE_CDN = "0"
-  GATSBY_CLOUD_FILE_CDN = "0"
+  environment = { NODE_VERSION = "18" }

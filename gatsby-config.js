@@ -9,14 +9,6 @@
 // Add this to ignore SSL errors for local development
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
-const adapter = require("gatsby-adapter-netlify")
-
-// Hard-disable Gatsby Cloud CDNs on Netlify
-if (process.env.NETLIFY) {
-  process.env.GATSBY_CLOUD_IMAGE_CDN = "0"
-  process.env.GATSBY_CLOUD_FILE_CDN = "0"
-}
-
 module.exports = {
   adapter: adapter(),
   // flags: {
