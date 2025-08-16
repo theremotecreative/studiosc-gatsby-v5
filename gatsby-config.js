@@ -10,9 +10,9 @@
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 module.exports = {
-  flags: {
-    LMDB_STORE: false,
-  },
+  // flags: {
+  //   LMDB_STORE: false,
+  // },
   siteMetadata: {
     title: `StudiosC`,
     description: `Architecture Studio Based in Brooklyn, New York`,

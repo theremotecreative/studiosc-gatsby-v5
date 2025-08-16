@@ -1,50 +1,75 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useStaticQuery, graphql, Link } from "gatsby"
 import styled from "styled-components"
 import { GatsbyImage, getSrc } from "gatsby-plugin-image"
-import Isotope from "isotope-layout/js/isotope"
-import imagesLoaded from "imagesloaded"
 import { globalHistory } from "@reach/router"
 
 const IsoGrid = () => {
-  const isotope = React.useRef()
+  const containerRef = useRef(null)
+  const isotope = useRef(null)
+
   const [filterKey, setFilterKey] = useState("*")
   const [parentCategory, setParentCategory] = useState(null)
 
+  // Mount: create Isotope only in the browser
   useEffect(() => {
-    isotope.current = new Isotope(".filter-container", {
-      itemSelector: ".filter-item",
-      layoutMode: "fitRows",
-    })
+    if (typeof window === "undefined" || !containerRef.current) return
 
-    const savedFilter = localStorage.getItem("projectFilterKey")
-    if (savedFilter) {
-      setFilterKey(savedFilter)
-      setParentCategory(savedFilter === "*" ? null : savedFilter)
+    let iso
+    let imgLoad
+    ;(async () => {
+      // Load libs only in the browser
+      const [{ default: Isotope }, imagesLoadedMod] = await Promise.all([
+        import("isotope-layout"),
+        import("imagesloaded"),
+      ])
+      const imagesLoaded = imagesLoadedMod.default || imagesLoadedMod
+
+      iso = new Isotope(containerRef.current, {
+        itemSelector: ".filter-item",
+        layoutMode: "fitRows",
+      })
+      isotope.current = iso
+
+      // restore saved filter
+      const saved = localStorage.getItem("projectFilterKey")
+      if (saved) {
+        setFilterKey(saved)
+        setParentCategory(saved === "*" ? null : saved)
+      }
+
+      // wait for images, then layout
+      imgLoad = imagesLoaded(containerRef.current)
+      imgLoad.on("always", () => iso.layout())
+    })()
+
+    return () => {
+      try {
+        imgLoad && imgLoad.off("always")
+      } catch {}
+      try {
+        iso && iso.destroy()
+      } catch {}
     }
-
-    imagesLoaded(".filter-container", () => {
-      isotope.current.layout()
-    })
-
-    return () => isotope.current.destroy()
   }, [])
 
+  // Listen for route changes (browser only)
   useEffect(() => {
+    if (typeof window === "undefined") return
     const unlisten = globalHistory.listen(({ location }) => {
       const isLeavingProjects = !location.pathname.startsWith("/projects/")
       if (isLeavingProjects) {
         localStorage.removeItem("projectFilterKey")
       } else {
-        const savedFilter = localStorage.getItem("projectFilterKey") || "*"
-        setFilterKey(savedFilter)
-        setParentCategory(savedFilter === "*" ? null : savedFilter)
+        const saved = localStorage.getItem("projectFilterKey") || "*"
+        setFilterKey(saved)
+        setParentCategory(saved === "*" ? null : saved)
       }
     })
-
     return () => unlisten()
   }, [])
 
+  // Apply filter to Isotope
   useEffect(() => {
     if (isotope.current) {
       isotope.current.arrange({
@@ -53,12 +78,13 @@ const IsoGrid = () => {
     }
   }, [filterKey])
 
+  // Move/show the size submenu
   useEffect(() => {
+    if (typeof document === "undefined") return
     const developmentItem = document.querySelector(
       ".project-cats > li:nth-child(2)"
     )
     const sizeSubMenu = document.querySelector(".size-cats")
-
     if (parentCategory === "development" && developmentItem && sizeSubMenu) {
       developmentItem.appendChild(sizeSubMenu)
       sizeSubMenu.style.display = "block"
@@ -71,17 +97,21 @@ const IsoGrid = () => {
     const newKey = key === parentCategory ? "*" : key
     setParentCategory(newKey === "*" ? null : newKey)
     setFilterKey(newKey)
-    localStorage.setItem("projectFilterKey", newKey)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("projectFilterKey", newKey)
+    }
   }
 
   const handleChildCategoryClick = key => () => {
     setFilterKey(key)
-    localStorage.setItem("projectFilterKey", key)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("projectFilterKey", key)
+    }
   }
 
   const data = useStaticQuery(graphql`
     query {
-      allWpProperty(sort: { fields: date, order: DESC }) {
+      allWpProperty(sort: { date: DESC }) {
         edges {
           node {
             title
@@ -193,7 +223,7 @@ const IsoGrid = () => {
         </li>
       </ul>
 
-      <ul className="filter-container">
+      <ul ref={containerRef} className="filter-container">
         {propertyMap.map(({ node: property }) => {
           const fallbackImage = "https://via.placeholder.com/800x400"
           const hoverImage = property.propertyInfo.secondaryImage?.localFile
@@ -209,7 +239,7 @@ const IsoGrid = () => {
               to={`/projects/${property.slug}`}
               key={property.slug}
               className={`filter-item ${property.categories.nodes
-                .map(cat => cat.slug)
+                .map(c => c.slug)
                 .join(" ")}`}
             >
               <div className="property-container">
