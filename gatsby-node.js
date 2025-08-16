@@ -221,19 +221,7 @@ async function getProjects({ graphql, reporter }) {
   return published
 }
 
-/* ----------------------------- ISOTOPE WEBPACK ---------------------------- */
-
-exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
-  if (stage === "build-html") {
-    actions.setWebpackConfig({
-      module: {
-        rules: [{ test: /isotope-layout/, use: loaders.null() }],
-      },
-    })
-  }
-}
-
-/* ---------------------------------- deploy troubleshooting ---------------------------------- */
+/* ---------------------- Webpack null loader configuration ---------------------- */
 
 exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
   if (stage === "build-html" || stage === "develop-html") {
