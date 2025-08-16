@@ -9,8 +9,8 @@
 // Add this to ignore SSL errors for local development
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
-
 module.exports = {
+  adapter: adapter(),
   // flags: {
   //   LMDB_STORE: false,
   // },
