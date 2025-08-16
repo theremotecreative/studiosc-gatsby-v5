@@ -1,19 +1,19 @@
 // src/pages/projects.js
-import React from "react";
-import { graphql } from "gatsby";
-import { getSrc } from "gatsby-plugin-image";
+import React from "react"
+import { graphql } from "gatsby"
+import { getSrc } from "gatsby-plugin-image"
 
-import Layout from "../components/layout";
-import Seo from "../components/seo";
-import IsoGrid from "../components/isotope-grid";
+import Layout from "../components/layout"
+import Seo from "../components/seo"
+import IsoGrid from "../components/isotope-grid"
 
 const ProjectPage = ({ data }) => {
-  const seo = data?.queryContent?.seo;
+  const seo = data?.queryContent?.seo
 
   // Safely turn gatsbyImageData into a URL for <Seo />
   const ogGatsby =
-    seo?.opengraphImage?.localFile?.childImageSharp?.gatsbyImageData;
-  const metaImage = ogGatsby ? getSrc(ogGatsby) : undefined;
+    seo?.opengraphImage?.localFile?.childImageSharp?.gatsbyImageData
+  const metaImage = ogGatsby ? getSrc(ogGatsby) : undefined
 
   return (
     <Layout>
@@ -22,12 +22,12 @@ const ProjectPage = ({ data }) => {
         description={seo?.metaDesc || "StudiosC projects"}
         metaImage={metaImage}
       />
-      <IsoGrid />
+      {/* <IsoGrid /> */}
     </Layout>
-  );
-};
+  )
+}
 
-export default ProjectPage;
+export default ProjectPage
 
 export const pageQuery = graphql`
   query ProjectsPageQuery {
@@ -49,4 +49,4 @@ export const pageQuery = graphql`
       }
     }
   }
-`;
+`
