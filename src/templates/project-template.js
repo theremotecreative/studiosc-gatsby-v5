@@ -207,7 +207,7 @@ const ProjectMain = styled.div`
           justify-content: space-between;
           font-size: 16px;
           padding: 17px 8px;
-          border-top: 1px solid #5F5F5F;
+          border-top: 1px solid #5f5f5f;
           margin-top: 0px;
           margin-bottom: 0px;
 
@@ -248,7 +248,12 @@ const ProjectMain = styled.div`
     margin-left: auto;
     margin-right: auto;
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       font-family: "Roboto", sans-serif;
       font-weight: bold;
       margin-bottom: 20px;
@@ -260,7 +265,8 @@ const ProjectMain = styled.div`
       margin-bottom: 20px;
     }
 
-    ul, ol {
+    ul,
+    ol {
       margin-left: 20px;
       margin-bottom: 20px;
     }
@@ -299,7 +305,7 @@ const ProjectMain = styled.div`
     }
   }
 
-  .two-column-grid{
+  .two-column-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.75em;
@@ -309,40 +315,40 @@ const ProjectMain = styled.div`
     gap: 1em;
   }
 
-  .no-margin-bottom{
+  .no-margin-bottom {
     margin-bottom: 0 !important;
   }
 
-  .margin-top-80{
+  .margin-top-80 {
     margin-top: 80px;
   }
 
-  .margin-top-1_75em{
+  .margin-top-1_75em {
     margin-top: 1.75em;
   }
 
-  .padding-right-10-percent{
+  .padding-right-10-percent {
     padding-right: 10%;
   }
 
-  .wp-block-columns .wp-block-columns{
+  .wp-block-columns .wp-block-columns {
     margin-bottom: 0;
   }
 
-  .column-row{
+  .column-row {
     flex-direction: row;
   }
 
-  .img-less-height{
+  .img-less-height {
     height: calc(100% - 2em);
 
-    img{
+    img {
       height: 100%;
     }
   }
 
   .wp-block-columns {
-    align-items: stretch !important;   /* Columns match heights */
+    align-items: stretch !important; /* Columns match heights */
   }
   .wp-block-columns .wp-block-column {
     display: flex;
@@ -362,30 +368,31 @@ const ProjectMain = styled.div`
     display: block;
   }
 
-  .wp-block-columns .img-margin-bottom, .wp-block-group .img-margin-bottom{
+  .wp-block-columns .img-margin-bottom,
+  .wp-block-group .img-margin-bottom {
     margin-bottom: 1.75em;
   }
 
-  .wp-block-columns .wp-block-image .gatsby-image-wrapper{
+  .wp-block-columns .wp-block-image .gatsby-image-wrapper {
     height: 100%;
     width: 100%;
   }
 
-  .height-50{
+  .height-50 {
     height: 50%;
     display: flex !important;
     align-items: end !important;
     flex: initial !important;
   }
 
-  .height-60{
+  .height-60 {
     height: 60%;
     display: flex !important;
     align-items: end !important;
     flex: initial !important;
   }
 
-  .wp-block-columns .align-end{
+  .wp-block-columns .align-end {
     justify-content: end;
   }
 
@@ -396,40 +403,37 @@ const ProjectMain = styled.div`
   }
 
   @media (max-width: 992px) {
-
-    .property-info{
-        grid-template-columns: 1fr 0.2fr 0.8fr;
+    .property-info {
+      grid-template-columns: 1fr 0.2fr 0.8fr;
     }
-
   }
 
-  @media (max-width: 781px){
-
-    .wp-block-image{
-        text-align: center;
+  @media (max-width: 781px) {
+    .wp-block-image {
+      text-align: center;
     }
 
     .wp-block-column:nth-child(even) {
-        margin-left: 0;
+      margin-left: 0;
     }
 
     .wp-block-column {
-        flex-basis: 100% !important;
+      flex-basis: 100% !important;
     }
 
-    .margin-top-80, .wp-block-columns{
-        margin-top: 0;
-        margin-bottom: 0;
+    .margin-top-80,
+    .wp-block-columns {
+      margin-top: 0;
+      margin-bottom: 0;
     }
 
-    .two-column-grid{
-        gap: 0;
+    .two-column-grid {
+      gap: 0;
     }
 
     .wp-block-columns .wp-block-image {
       margin-bottom: 1em;
     }
-
   }
 
   @media (max-width: 768px) {
@@ -446,11 +450,11 @@ const ProjectMain = styled.div`
     }
 
     .property-info {
-        grid-template-columns: 1fr;
-        gap: 0;
-        padding: 0 50px;
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0 50px;
 
-      .info-right{
+      .info-right {
         grid-column: 1;
       }
 
@@ -470,34 +474,33 @@ const ProjectMain = styled.div`
       }
     }
 
-    .two-column-grid{
-        grid-template-columns: 1fr;
+    .two-column-grid {
+      grid-template-columns: 1fr;
     }
 
-    .back-to-projects{
-        text-align: center;
+    .back-to-projects {
+      text-align: center;
     }
 
-    .mobile-padding{
-        padding: 0 50px;
+    .mobile-padding {
+      padding: 0 50px;
     }
 
-    .img-less-height{
+    .img-less-height {
       height: 100%;
 
-      img{
+      img {
         height: auto;
       }
     }
   }
 
-  @media (max-width: 480px){
-    
-    .mobile-padding, .property-info, .top-info{
-        padding: 0 20px;
+  @media (max-width: 480px) {
+    .mobile-padding,
+    .property-info,
+    .top-info {
+      padding: 0 20px;
     }
-
-
   }
 `
 

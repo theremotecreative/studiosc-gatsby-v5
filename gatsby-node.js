@@ -2,9 +2,6 @@
 const path = require(`path`)
 const chunk = require(`lodash/chunk`)
 
-const RECENT_POSTS_TO_BUILD = 12
-const RECENT_PROJECTS_TO_BUILD = 24
-
 exports.createPages = async gatsbyUtilities => {
   const { reporter } = gatsbyUtilities
   reporter.info(`createPages: starting…`)
@@ -21,31 +18,20 @@ async function createBlog(gatsbyUtilities) {
   reporter.info(`Blog: fetched ${posts.length} posts`)
   if (!posts.length) return
 
+  // sort newest -> oldest
   posts.sort((a, b) => new Date(b.post.date || 0) - new Date(a.post.date || 0))
 
-  const recent = posts.slice(0, RECENT_POSTS_TO_BUILD)
-  const older = posts.slice(RECENT_POSTS_TO_BUILD)
+  // Create ALL individual posts as SSG (no DSG, no SSR)
+  await createIndividualBlogPostPages({
+    items: posts,
+    gatsbyUtilities,
+  })
 
-  await Promise.all([
-    createIndividualBlogPostPages({
-      items: recent,
-      gatsbyUtilities,
-      defer: false,
-    }),
-    createIndividualBlogPostPages({
-      items: older,
-      gatsbyUtilities,
-      defer: true,
-    }),
-    createBlogPostArchive({ posts, gatsbyUtilities }),
-  ])
+  // Create paginated archive
+  await createBlogPostArchive({ posts, gatsbyUtilities })
 }
 
-const createIndividualBlogPostPages = async ({
-  items,
-  gatsbyUtilities,
-  defer,
-}) =>
+const createIndividualBlogPostPages = async ({ items, gatsbyUtilities }) =>
   Promise.all(
     items.map(({ previous, post, next }) => {
       const pagePath = post.uri?.endsWith(`/`)
@@ -55,7 +41,7 @@ const createIndividualBlogPostPages = async ({
       return gatsbyUtilities.actions.createPage({
         path: pagePath,
         component: path.resolve(`./src/templates/blog-post.js`),
-        defer,
+        // IMPORTANT: no `defer` key — everything is SSG
         context: {
           id: post.id,
           previousPostId: previous ? previous.id : null,
@@ -86,7 +72,6 @@ async function createBlogPostArchive({ posts, gatsbyUtilities }) {
 
   const postsPerPage =
     graphqlResult?.data?.wp?.readingSettings?.postsPerPage || 10
-
   const postsChunkedIntoArchivePages = chunk(posts, postsPerPage)
   const totalPages = postsChunkedIntoArchivePages.length
 
@@ -102,6 +87,7 @@ async function createBlogPostArchive({ posts, gatsbyUtilities }) {
       await gatsbyUtilities.actions.createPage({
         path: pagePath,
         component: path.resolve(`./src/templates/blog-post-archive.js`),
+        // No `defer` here either
         context: {
           offset: index * postsPerPage,
           postsPerPage,
@@ -163,27 +149,22 @@ async function createProjects(gatsbyUtilities) {
   reporter.info(`Projects: fetched ${pages.length} wpProperty nodes`)
   if (!pages.length) return
 
+  // sort newest -> oldest
   pages.sort((a, b) => new Date(b.page.date || 0) - new Date(a.page.date || 0))
 
-  const recent = pages.slice(0, RECENT_PROJECTS_TO_BUILD)
-  const older = pages.slice(RECENT_PROJECTS_TO_BUILD)
-
-  const createSet = async (items, defer) =>
-    Promise.all(
-      items.map(({ page }) => {
-        const pagePath = `/projects/${page.slug}/`
-        reporter.info(`Creating project page ${pagePath} (defer=${defer})`)
-        return actions.createPage({
-          path: pagePath,
-          component: path.resolve(`./src/templates/project-template.js`),
-          defer,
-          context: { id: page.id },
-        })
+  // Create ALL projects as SSG (no DSG)
+  await Promise.all(
+    pages.map(({ page }) => {
+      const pagePath = `/projects/${page.slug}/`
+      reporter.info(`Creating project page ${pagePath}`)
+      return actions.createPage({
+        path: pagePath,
+        component: path.resolve(`./src/templates/project-template.js`),
+        // IMPORTANT: no `defer`
+        context: { id: page.id },
       })
-    )
-
-  await createSet(recent, false)
-  await createSet(older, true)
+    })
+  )
 }
 
 // NOTE: no GraphQL status filter here; we filter in JS to avoid schema inconsistencies
