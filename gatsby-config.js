@@ -6,16 +6,10 @@
  *
  */
 
-const adapter = require("gatsby-adapter-netlify").default;
-
-// Add this to ignore SSL errors for local development
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+const adapter = require("gatsby-adapter-netlify").default
 
 module.exports = {
   adapter: adapter(),
-  // flags: {
-  //   LMDB_STORE: false,
-  // },
   siteMetadata: {
     title: `StudiosC`,
     description: `Architecture Studio Based in Brooklyn, New York`,

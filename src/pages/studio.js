@@ -333,7 +333,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    sliderContent: allWpStudioSlide(sort: { fields: date, order: ASC }) {
+    sliderContent: allWpStudioSlide(sort: { date: ASC }) {
       edges {
         node {
           featuredImage {
@@ -358,7 +358,7 @@ export const pageQuery = graphql`
         gatsbyImageData(width: 50, layout: CONSTRAINED)
       }
     }
-    teamContent: allWpTeamMember(sort: { fields: date, order: DESC }) {
+    teamContent: allWpTeamMember(sort: { date: DESC }) {
       edges {
         node {
           title
