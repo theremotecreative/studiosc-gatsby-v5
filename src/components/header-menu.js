@@ -1,103 +1,103 @@
-import React from "react"
-import { Link } from "gatsby"
-import styled from 'styled-components'
+import React from "react";
+import { Link } from "gatsby";
+import { useLocation } from "@reach/router";
+import styled from "styled-components";
 
 const HeaderMenu = () => {
+  const { pathname } = useLocation();      // ← current path
 
-    return(
-        <MainNav>
-            <ul class="main-menu">
-                <li><Link to={"/projects/"}>Projects</Link></li>
-                <li><Link to={"/studio/"}>Studio</Link></li>
-                <li><Link to={"/press/"}>Press</Link></li>
-            </ul>
-        </MainNav>
-    )
+  // Helper: returns "active" if this link is the current page
+  const isActive = (to) =>
+    pathname === to || (to !== "/" && pathname.startsWith(to)) ? "active" : "";
 
-}
+  return (
+    <MainNav>
+      <ul className="main-menu">
+        <li className={isActive("/projects/")}>
+          <Link to="/projects/">Projects</Link>
+        </li>
+        <li className={isActive("/studio/")}>
+          <Link to="/studio/">Studio</Link>
+        </li>
+        <li className={isActive("/press/")}>
+          <Link to="/press/">Press</Link>
+        </li>
+      </ul>
+    </MainNav>
+  );
+};
 
 const MainNav = styled.nav`
-    opacity: 1;
-    visibility: visible;
-    transition-duration: .3s;
-    ul.main-menu {
-        list-style: none;
-        display: flex;
-        margin-bottom: 0;
-        margin-top: 0px;
-        > li {
-            color: #000;
-            font-family: 'Carlito', sans-serif;
-            font-weight: 400;
-            font-size: 24px;
-            line-height: 1;
-            padding-right: 35px;
-            margin-bottom: 0;
-            position: relative;
-            overflow: hidden;
-            &:last-child {
-                padding-right: 0;
-            }
-            a {
-                color: #000;
-                font-family: 'Carlito', sans-serif;
-                font-style: normal;
-                text-decoration: none;
-            }
-            > ul.submenu {
-                position: absolute;
-                left: 0;
-                visibility: hidden;
-                opacity: 0;
-                z-index: 3;
-                transition: opacity .2s ease-in;
-                width: 240px;
-                margin: 0;
-                background-color: #f2efef;
-                font-family: 'Carlito', sans-serif;
-                font-weight: 500;
-                letter-spacing: 0px;
-                font-style: normal;
-                line-height: 34px;
-                list-style: none;
-                border-top: 3px solid #25afb4;
-                box-shadow: 1px 1px 30px rgb(0 0 0 / 6%);
-                li {
-                    margin-bottom: 0;
-                    a {
-                        display: block;
-                        width: 100%;
-                        font-family: 'Carlito', sans-serif;
-                        font-weight: 500;
-                        padding: 7px 20px;
-                        border-bottom-color: #dcdadb;
-                        color: #333333;
-                        background-color: #f2efef;
-                        font-size: 14px;
-                        line-height: 34px;
-                        text-transform: uppercase;
-                        transition-duration: .3s;
-                        &:hover {
-                            background-color: #f8f8f8;
-                        }
-                    }
-                }
-            }
-            &: hover {
-                overflow: visible;
-                cursor: pointer;
-                > ul.submenu {
-                    opacity: 1;
-                    visibility: visible;
-                }
-            }
-        }
-    }
-    @media(max-width: 767px) {
-        display: none;
-        opacity: 0;
-        visibility: hidden;
-    }
-`
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s;
+  /* ——— menu layout ——— */
+  ul.main-menu {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    gap: 35px;
+    > li {
+      font-family: "Carlito", sans-serif;
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1;
+      position: relative;
+      &:last-child {
+        padding-right: 0;
+      }
+        &.active::before {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 0;
+        height: 5px;
+        width: 100%;
+        background: #111111;
+        top: -30px;
+      }
+      a {
+        text-decoration: none;
+        color: #000;
+      }
 
-export default HeaderMenu
+      /* (keep your submenu styles intact) */
+      > ul.submenu {
+        position: absolute;
+        left: 0;
+        visibility: hidden;
+        opacity: 0;
+        width: 240px;
+        margin: 0;
+        background: #f2efef;
+        list-style: none;
+        border-top: 3px solid #25afb4;
+        transition: opacity 0.2s ease-in;
+        li a {
+          display: block;
+          padding: 7px 20px;
+          font-size: 14px;
+          text-transform: uppercase;
+          color: #333;
+          &:hover {
+            background: #f8f8f8;
+          }
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        > ul.submenu {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  /* hide on mobile */
+  @media (max-width: 767px) {
+    display: none;
+  }
+`;
+
+export default HeaderMenu;

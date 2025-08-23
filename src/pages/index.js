@@ -1,115 +1,163 @@
-import React from "react"
-import { graphql } from 'gatsby'
-import styled from 'styled-components'
-import { GatsbyImage } from "gatsby-plugin-image"
+// src/pages/index.js
+import React from "react";
+import { graphql } from "gatsby";
+import styled from "styled-components";
+import { GatsbyImage, getSrc } from "gatsby-plugin-image";
 
-import Layout from "../components/layout"
-import Seo from "../components/seo"
+import Layout from "../components/layout";
+import Seo from "../components/seo";
 
-const IndexPage = ({ data: { featuredImage, queryContent, mobileImage } }) => {
+const IndexPage = ({ data }) => {
+  const featuredGatsby = data?.featuredImage?.childImageSharp?.gatsbyImageData;
 
-    return(
-        <Layout isHomePage>
-            <Seo 
-            title={queryContent.seo.title} 
-            description={queryContent.seo.metaDesc}
-            metaImage={queryContent.seo.opengraphImage.localFile.childImageSharp.fluid}
-            />
-            <DesktopImage>
-                <GatsbyImage image={featuredImage.childImageSharp.gatsbyImageData} alt={'StudiosC - Architecture Studio based in Brooklyn, NY'} />
-            </DesktopImage>
-            <MobileImage>
-                <GatsbyImage image={mobileImage.featuredImage.node.localFile.childImageSharp.gatsbyImageData} alt={mobileImage.featuredImage.node.title} />
-            </MobileImage>
-        </Layout>
-    )
+  // Use mobile hero if present, otherwise fall back to desktop hero
+  const mobileImageData =
+    data?.mobileImage?.featuredImage?.node?.localFile?.childImageSharp
+      ?.gatsbyImageData || featuredGatsby;
 
-}
+  const mobileImageAlt =
+    data?.mobileImage?.featuredImage?.node?.title ||
+    "StudiosC - Architecture Studio based in Brooklyn, NY";
+
+  // Safely compute og:image (fallback to featured hero, or omit)
+  const ogGatsby =
+    data?.queryContent?.seo?.opengraphImage?.localFile?.childImageSharp
+      ?.gatsbyImageData;
+
+  const metaImage =
+    (ogGatsby && getSrc(ogGatsby)) ||
+    (featuredGatsby && getSrc(featuredGatsby)) ||
+    undefined;
+
+  return (
+    <Layout isHomePage>
+      <Seo
+        title={data?.queryContent?.seo?.title || "StudiosC"}
+        description={
+          data?.queryContent?.seo?.metaDesc ||
+          "Architecture Studio based in Brooklyn, NY"
+        }
+        metaImage={metaImage}
+      />
+
+      {featuredGatsby && (
+        <DesktopImage>
+          <GatsbyImage
+            image={featuredGatsby}
+            alt="StudiosC - Architecture Studio based in Brooklyn, NY"
+            loading="eager"
+          />
+        </DesktopImage>
+      )}
+
+      {/* ✅ Keep this block exactly — it’s what prevents the blurry mobile hero */}
+      {mobileImageData && (
+        <MobileImage>
+          <GatsbyImage
+            image={mobileImageData}
+            alt={mobileImageAlt}
+            // force a larger srcset candidate on small screens to avoid upscaling a 100vh hero
+            sizes="(max-width: 767px) 2000px, 100vw"
+            loading="eager"
+            imgStyle={{ objectFit: "cover", width: "100%", height: "100%" }}
+            style={{ height: "100vh", width: "100%" }}
+          />
+        </MobileImage>
+      )}
+    </Layout>
+  );
+};
 
 const DesktopImage = styled.div`
+  height: 100vh;
+  width: 100%;
+
+  .gatsby-image-wrapper {
     height: 100vh;
     width: 100%;
+  }
 
-    .gatsby-image-wrapper {
-        height: 100vh;
-        width: 100%;
-    }
+  img {
+    height: 100vh;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
 
-    img {
-        height: 100vh;
-        width: 100%;
-        object-fit: cover;
-        object-position: center;
-    }
-
-    @media(max-width: 767px) {
-        display: none;
-    }
-`
+  @media (max-width: 767px) {
+    display: none;
+  }
+`;
 
 const MobileImage = styled.div`
-    display: none;
+  display: none;
+  height: 100vh;
+
+  .gatsby-image-wrapper {
     height: 100vh;
+    width: 100%;
+  }
 
-    .gatsby-image-wrapper {
-        height: 100vh;
-    }
+  img {
+    height: 100vh;
+    object-fit: cover;
+    object-position: center;
+  }
 
-    img {
-        height: 100vh;
-        object-fit: cover;
-        object-position: center;
-    }
+  @media (max-width: 767px) {
+    display: block;
+  }
+`;
 
-    @media(max-width: 767px) {
-        display: block;
-    }
-`
-
-export default IndexPage
+export default IndexPage;
 
 export const pageQuery = graphql`
-    query {
-        featuredImage: file(relativePath: { eq: "homepage-2024.jpg" }) {
+  query HomePageQuery {
+    featuredImage: file(relativePath: { eq: "homepage-2024.jpg" }) {
+      childImageSharp {
+        gatsbyImageData(
+          width: 2400
+          quality: 100
+          placeholder: BLURRED
+          formats: [AUTO, WEBP, AVIF]
+        )
+      }
+    }
+    queryContent: wpPage(databaseId: { eq: 224 }) {
+      seo {
+        title
+        metaDesc
+        opengraphImage {
+          localFile {
             childImageSharp {
-              gatsbyImageData (
-                width: 2000
-                quality: 100
+              gatsbyImageData(
+                width: 1200
                 placeholder: BLURRED
                 formats: [AUTO, WEBP, AVIF]
               )
             }
           }
-        queryContent: wpPage(databaseId: {eq: 224}) {
-            seo {
-                title
-                metaDesc
-                opengraphImage {
-                  localFile {
-                    childImageSharp {
-                      fluid(maxWidth: 1920) {
-                        ...GatsbyImageSharpFluid_withWebp
-                      }
-                    }
-                  }
-                }
-            }
         }
-        mobileImage: wpHomeSection(databaseId: {eq: 1318}) {
-            featuredImage {
-                node {
-                    title
-                    localFile {
-                        childImageSharp {
-                            gatsbyImageData (
-                                width: 800
-                                placeholder: BLURRED
-                                formats: [AUTO, WEBP, AVIF]
-                            )
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
-`
+    mobileImage: wpHomeSection(databaseId: { eq: 1318 }) {
+      featuredImage {
+        node {
+          title
+          localFile {
+            childImageSharp {
+              gatsbyImageData(
+                layout: FULL_WIDTH
+                quality: 100
+                placeholder: BLURRED
+                # Big breakpoints so small phones still get a tall, crisp 100vh image
+                breakpoints: [480, 750, 1080, 1400, 1800, 2000, 2400]
+                formats: [AUTO, WEBP, AVIF]
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+`;

@@ -1,25 +1,47 @@
-import React from "react"
-import { useStaticQuery, graphql } from "gatsby"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
+// src/components/mobile-logo.js
+import React from "react";
+import { useStaticQuery, graphql } from "gatsby";
+import { GatsbyImage } from "gatsby-plugin-image";
 
-const HomeMobileLogo = () => {
+export default function HomeMobileLogo() {
   const data = useStaticQuery(graphql`
-    query {
-      placeholderImage: file(relativePath: { eq: "logo-blue-circle.png" }) {
+    query HomeMobileLogoSafeQuery {
+      placeholderImage: file(relativePath: { eq: "logo-white-square.png" }) {
         childImageSharp {
-          gatsbyImageData (
-              width: 55
-              placeholder: BLURRED
-              formats: [AUTO, WEBP, AVIF]
+          gatsbyImageData(
+            layout: FIXED
+            width: 55
+            placeholder: NONE
+            formats: [AUTO, WEBP, AVIF]
+            backgroundColor: "transparent"
           )
         }
+        publicURL
       }
     }
-  `)
+  `);
 
-  const mainLogo = getImage(data.placeholderImage.childImageSharp.gatsbyImageData)
+  const imageData = data?.placeholderImage?.childImageSharp?.gatsbyImageData;
+  const fallbackURL = data?.placeholderImage?.publicURL;
 
-  return <GatsbyImage className={"home-mobile-logo"} image={mainLogo} alt="StudiosC Logo" />
+  if (!imageData) {
+    return (
+      <img
+        className="home-mobile-logo"
+        src={fallbackURL || "/logo-white-square.png"}
+        alt="StudiosC Logo"
+        width={55}
+        height="auto"
+        style={{ display: "block" }}
+      />
+    );
+  }
+
+  return (
+    <GatsbyImage
+      className="home-mobile-logo"
+      image={imageData}
+      alt="StudiosC Logo"
+    />
+  );
 }
-
-export default HomeMobileLogo

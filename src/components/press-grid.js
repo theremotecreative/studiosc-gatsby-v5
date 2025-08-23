@@ -1,48 +1,67 @@
-import React, { useState, useEffect } from "react"
-import { useStaticQuery, graphql, Link } from "gatsby"
+import React, { useState, useEffect, useRef } from "react"
+import { useStaticQuery, graphql } from "gatsby"
 import styled from "styled-components"
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
-import Isotope from "isotope-layout/js/isotope"
+// NOTE: Do not import "isotope-layout" at the top level.
+// We dynamically import it in a useEffect so SSR doesn't try to require it.
 
 const PressGrid = () => {
-  if (typeof window !== `undefined`) {
-    // import Isotope API
-    const Isotope = require("isotope-layout/js/isotope")
-  }
+  const gridRef = useRef(null)
+  const isoRef = useRef(null)
+  const [filterKey, setFilterKey] = useState("*")
 
-  // init one ref to store the future isotope object
-  const isotope = React.useRef()
-  // store the filter keyword in a state
-  const [filterKey, setFilterKey] = React.useState("*")
+  // Instantiate Isotope on the client only
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    let canceled = false
 
-  // initialize an Isotope object with configs
-  React.useEffect(() => {
-    isotope.current = new Isotope(".filter-container", {
-      itemSelector: ".filter-item",
-      layoutMode: "fitRows",
-    })
-    // cleanup
-    return () => isotope.current.destroy()
+    ;(async () => {
+      const { default: Isotope } = await import("isotope-layout")
+      if (canceled || !gridRef.current) return
+
+      isoRef.current = new Isotope(gridRef.current, {
+        itemSelector: ".filter-item",
+        layoutMode: "fitRows",
+      })
+
+      // Initial layout after mount
+      requestAnimationFrame(() => {
+        if (!canceled && isoRef.current) isoRef.current.layout()
+      })
+    })()
+
+    return () => {
+      canceled = true
+      if (isoRef.current) {
+        isoRef.current.destroy()
+        isoRef.current = null
+      }
+    }
   }, [])
 
-  // handling filter key change
-  React.useEffect(() => {
-    filterKey === "*"
-      ? isotope.current.arrange({ filter: `*` })
-      : isotope.current.arrange({ filter: `.${filterKey}` })
+  // Apply filters when the key changes
+  useEffect(() => {
+    if (isoRef.current) {
+      isoRef.current.arrange({
+        filter: filterKey === "*" ? "*" : `.${filterKey}`,
+      })
+    }
   }, [filterKey])
 
   const handleFilterKeyChange = key => () => setFilterKey(key)
 
+  // Updated sort syntax (avoids Gatsby deprecation warning) and includes `id` for stable keys
   const data = useStaticQuery(graphql`
     query {
       allWpStudioPress(sort: { date: DESC }) {
         edges {
           node {
+            id
             title
             categories {
               nodes {
+                name
                 slug
               }
             }
@@ -63,6 +82,7 @@ const PressGrid = () => {
             pressInfo {
               pressDate
               pressLink
+              fullTitle
             }
           }
         }
@@ -73,129 +93,250 @@ const PressGrid = () => {
   const pressMap = data.allWpStudioPress.edges
 
   return (
-    <>
-      <GridMain>
-        <ul class="project-cats">
-          <li onClick={handleFilterKeyChange("*")}>All</li>
-          <li onClick={handleFilterKeyChange("publication")}>Publications</li>
-          <li onClick={handleFilterKeyChange("award")}>Awards</li>
+    <GridMain>
+      <div className="project-cats-container">
+        <h3>Press</h3>
+        <ul className="project-cats">
+          <li
+            className={filterKey === "*" ? "active" : ""}
+            onClick={handleFilterKeyChange("*")}
+          >
+            All
+          </li>
+          <li
+            className={filterKey === "publication" ? "active" : ""}
+            onClick={handleFilterKeyChange("publication")}
+          >
+            Publications
+          </li>
+          <li
+            className={filterKey === "award" ? "active" : ""}
+            onClick={handleFilterKeyChange("award")}
+          >
+            Awards
+          </li>
         </ul>
-        <ul className="filter-container">
-          {pressMap.map(press => (
-            <div
-              className={`filter-item ${press.node.categories.nodes
-                .map(category => category.slug)
-                .join(" ")}`}
-            >
+      </div>
+
+      {/* Attach Isotope to a ref instead of querying by selector */}
+      <ul className="filter-container" ref={gridRef}>
+        {pressMap.map(({ node }) => {
+          const image = getImage(node.featuredImage?.node?.localFile)
+          const catNodes = node.categories?.nodes ?? []
+          const catClasses = catNodes.map(c => c.slug).join(" ")
+
+          return (
+            <li key={node.id} className={`filter-item ${catClasses}`}>
               <a
-                href={press.node.pressInfo.pressLink}
+                href={node.pressInfo?.pressLink || "#"}
                 target="_blank"
                 rel="noreferrer"
               >
-                <GatsbyImage
-                  className={"slide-background"}
-                  image={
-                    press.node.featuredImage.node.localFile.childImageSharp
-                      .gatsbyImageData
-                  }
-                  alt={press.node.featuredImage.node.title}
-                />
+                {image && (
+                  <GatsbyImage
+                    className="slide-background"
+                    image={image}
+                    alt={node.featuredImage?.node?.title || node.title}
+                    // Nudge Isotope to relayout as images load
+                    onLoad={() => isoRef.current && isoRef.current.layout()}
+                  />
+                )}
                 <div className="press-content">
-                  <p>{press.node.pressInfo.pressDate}</p>
-                  <h3>{press.node.title}</h3>
+                  <div
+                    className={`categories ${
+                      catNodes.length > 0
+                        ? catNodes
+                            .map(category => `category-${category.slug}`)
+                            .join(" ")
+                        : "uncategorized"
+                    }`}
+                  >
+                    {catNodes.length > 0 ? (
+                      catNodes.map(category => (
+                        <span
+                          key={category.slug}
+                          className={`category-item category-${category.slug}`}
+                        >
+                          {category.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="category-item uncategorized">
+                        Uncategorized
+                      </span>
+                    )}
+                  </div>
+                  <p className="full-title">{node.pressInfo?.fullTitle}</p>
+                  <div className="details">
+                    <p className="title">{node.title}</p>
+                    <p>{node.pressInfo?.pressDate}</p>
+                  </div>
                 </div>
               </a>
-            </div>
-          ))}
-        </ul>
-      </GridMain>
-    </>
+            </li>
+          )
+        })}
+      </ul>
+    </GridMain>
   )
 }
 
 const GridMain = styled.section`
   width: 100%;
   padding: 0 30px;
+
+  .project-cats-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    max-width: 1140px;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+    align-items: end;
+
+    h3 {
+      font-size: 42px;
+      font-weight: bold;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+  }
+
   ul.project-cats {
     list-style: none;
     display: flex;
     width: 100%;
     justify-content: flex-end;
-    align-items: center;
-    padding: 0 20px;
+    align-items: flex-end;
+    padding: 0 0 0 20px;
     margin: 0;
     margin-top: -25px;
     position: relative;
     z-index: 4;
+
     li {
       color: #474747;
-      font-family: 'Carlito', sans-serif;
-      font-weight: 700;
-      font-size: 17px;
-      padding-left: 20px;
+      font-family: "Carlito", sans-serif;
+      font-size: 16px;
       margin: 0;
       line-height: 3;
+      border-bottom: solid 1px #dedede;
+      padding-left: 45px;
+      padding-right: 45px;
       &:hover {
         cursor: pointer;
       }
     }
+    .active {
+      border-color: #474747;
+    }
   }
+
   h1 {
-      max-width: 1060px;
-      width: 100%;
-      margin: 0 auto;
-      font-family: Roboto;
-      font-weight: 400;
-      font-size: 24px;
-      text-transform: uppercase;
+    max-width: 1060px;
+    width: 100%;
+    margin: 0 auto;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    text-transform: uppercase;
   }
+
   .filter-container {
-      max-width: 1140px;
-      width: 100%;
-      margin: 0 auto;
-      margin-bottom: 50px;
+    list-style: none;
+    padding: 0;
+    max-width: 1140px;
+    width: 100%;
+    margin: 0 auto 50px;
   }
+
   .filter-item {
     width: 25%;
     border: 10px solid #fff;
     background-color: #fff;
     position: relative;
+
     .gatsby-image-wrapper {
-        height: auto;
-        min-height: 346px;
-        margin: 0 auto;
-        margin-bottom: 0px;
-        img {
-            object-fit {
-                contain !important;
-            }
-        }
+      height: auto;
+      min-height: 346px;
+      margin: 0 auto 0;
+      img {
+        /* fix typo: use property syntax, not block */
+        object-fit: contain !important;
+      }
     }
+
     .press-content {
       margin-bottom: 20px;
     }
     a {
       color: #242424;
       text-decoration: none;
+      display: block;
     }
     h3 {
-      font-family: 'Pathway Gothic One',sans-serif;
+      font-family: "Pathway Gothic One", sans-serif;
       font-size: 26px;
       font-weight: 400;
       margin-top: 0;
       margin-bottom: 0;
     }
     p {
-      font-family: Roboto;
+      font-family: Roboto, sans-serif;
       font-size: 16px;
-      text-transform: uppercase;
       padding: 8px 0;
       border-bottom: 1px solid #242424;
       display: inline-block;
       margin-bottom: 10px;
     }
   }
-  @media(max-width:1200px) {
+
+  .press-content .categories {
+    margin-top: 10px;
+    background: #dedede;
+    display: inline-block;
+    padding: 5px 9px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .press-content .categories.category-publication {
+    color: #ffffff;
+    background: #111111;
+  }
+
+  .press-content .full-title {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    border-bottom: 1px solid #dedede;
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  .press-content .details {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-bottom: 1px solid #dedede;
+  }
+
+  .press-content .details p {
+    border-bottom: none;
+    font-size: 10px;
+    margin-bottom: 0;
+    padding-bottom: 11px;
+  }
+
+  .press-content .details .title {
+    font-weight: 900;
+  }
+
+  @media (max-width: 1200px) {
     .filter-container {
       max-width: 855px;
     }
@@ -203,7 +344,7 @@ const GridMain = styled.section`
       width: 33.33%;
     }
   }
-  @media(max-width:850px) {
+  @media (max-width: 850px) {
     .filter-container {
       max-width: 570px;
     }
@@ -211,7 +352,7 @@ const GridMain = styled.section`
       width: 50%;
     }
   }
-  @media(max-width:767px) {
+  @media (max-width: 767px) {
     padding: 0px;
     ul.project-cats {
       justify-content: center;
@@ -221,7 +362,7 @@ const GridMain = styled.section`
       display: none;
     }
   }
-  @media(max-width:640px) {
+  @media (max-width: 640px) {
     .filter-container {
       max-width: 285px;
     }
