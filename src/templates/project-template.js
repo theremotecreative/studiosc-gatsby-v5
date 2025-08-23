@@ -265,6 +265,10 @@ const ProjectMain = styled.div`
       margin-bottom: 20px;
     }
 
+    .has-medium-font-size{
+      font-size: 1.25em;
+    }
+
     ul,
     ol {
       margin-left: 20px;
