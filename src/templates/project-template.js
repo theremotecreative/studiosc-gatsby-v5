@@ -396,6 +396,10 @@ const ProjectMain = styled.div`
     justify-content: end;
   }
 
+  .wp-block-columns .wp-block-column.space-between{
+    justify-content: space-between;
+  }
+
   @media (min-width: 782px) {
     .wp-block-column:not(:first-child) {
       margin-left: 1.75em;
