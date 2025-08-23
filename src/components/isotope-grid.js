@@ -148,6 +148,9 @@ const IsoGrid = () => {
                 }
               }
             }
+            propertyInfo {
+              propertyLocation
+            }
           }
         }
       }
