@@ -362,14 +362,34 @@ const GridMain = styled.section`
       display: none;
     }
   }
-  @media (max-width: 640px) {
+  @media screen and (max-width: 640px) {
     .filter-container {
       max-width: 285px;
+      margin: 0 auto;
+
+      .filter-item {
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
-    .filter-item {
-      width: 100%;
+
+    .project-cats-container {
+      grid-template-columns: 1fr;
+      padding: 0px 15px;
+    }
+
+    ul.project-cats {
+      padding: 0;
+
+      li {
+        flex: 1;
+        text-align: center;
+        padding-left: 30px;
+        padding-right: 30px;
+      }
     }
   }
+
 `
 
 export default PressGrid
