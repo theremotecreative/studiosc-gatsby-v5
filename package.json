@@ -27,6 +27,7 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
   },
   "dependencies": {
+    "@parcel/watcher": "^2.5.1",
     "@wordpress/block-library": "^9.12.0",
     "babel-plugin-styled-components": "^2.1.4",
     "gatsby": "^5.14.6",
