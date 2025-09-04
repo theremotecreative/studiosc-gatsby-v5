@@ -501,6 +501,14 @@ const ProjectMain = styled.div`
         height: auto;
       }
     }
+
+    .featured-image {
+      .gatsby-image-wrapper {
+        width: 100%;
+        height: auto;
+        margin-left: 0;
+      }
+    }
   }
 
   @media (max-width: 480px) {
