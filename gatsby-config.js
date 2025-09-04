@@ -17,6 +17,23 @@ module.exports = {
     siteUrl: `https://studiosc.net`,
   },
   plugins: [
+    // --- Google Analytics (gtag) ---
+    {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        // Prefer env var if set in Netlify/GitHub Actions; fallback to hardcoded ID
+        trackingIds: [process.env.GATSBY_GTAG_ID || `G-YP8E8EN36T`],
+        gtagConfig: {
+          anonymize_ip: true,
+          send_page_view: true,
+        },
+        pluginConfig: {
+          head: true,              // load in <head> so it appears in Network as gtag/js
+          respectDNT: true,        // respect “Do Not Track”
+          exclude: ["/privacy/**"] // optional: don’t track your privacy page(s)
+        },
+      },
+    },
     {
       resolve: `gatsby-source-wordpress`,
       options: {
