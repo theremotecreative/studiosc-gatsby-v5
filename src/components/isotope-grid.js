@@ -1,3 +1,4 @@
+// src/components/isotope-grid.js
 import React, { useState, useEffect, useRef } from "react"
 import { useStaticQuery, graphql, Link } from "gatsby"
 import styled from "styled-components"
@@ -11,6 +12,9 @@ const IsoGrid = () => {
   const [filterKey, setFilterKey] = useState("*")
   const [parentCategory, setParentCategory] = useState(null)
 
+  // Safe storage helpers for SSR
+  const session = typeof window !== "undefined" ? window.sessionStorage : null
+
   // Mount: create Isotope only in the browser
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current) return
@@ -18,7 +22,6 @@ const IsoGrid = () => {
     let iso
     let imgLoad
     ;(async () => {
-      // Load libs only in the browser
       const [{ default: Isotope }, imagesLoadedMod] = await Promise.all([
         import("isotope-layout"),
         import("imagesloaded"),
@@ -31,8 +34,13 @@ const IsoGrid = () => {
       })
       isotope.current = iso
 
-      // restore saved filter
-      const saved = localStorage.getItem("projectFilterKey")
+      // MIGRATION: clear any old persisted filter that lived in localStorage
+      try {
+        window.localStorage?.removeItem("projectFilterKey")
+      } catch {}
+
+      // Restore saved filter from this session only
+      const saved = session?.getItem("projectFilterKey")
       if (saved) {
         setFilterKey(saved)
         setParentCategory(saved === "*" ? null : saved)
@@ -59,9 +67,13 @@ const IsoGrid = () => {
     const unlisten = globalHistory.listen(({ location }) => {
       const isLeavingProjects = !location.pathname.startsWith("/projects/")
       if (isLeavingProjects) {
-        localStorage.removeItem("projectFilterKey")
+        // Leaving the grid entirely: forget the filter for a fresh next visit
+        session?.removeItem("projectFilterKey")
+        setFilterKey("*")
+        setParentCategory(null)
       } else {
-        const saved = localStorage.getItem("projectFilterKey") || "*"
+        // Returning to /projects within the same session: restore
+        const saved = session?.getItem("projectFilterKey") || "*"
         setFilterKey(saved)
         setParentCategory(saved === "*" ? null : saved)
       }
@@ -97,16 +109,12 @@ const IsoGrid = () => {
     const newKey = key === parentCategory ? "*" : key
     setParentCategory(newKey === "*" ? null : newKey)
     setFilterKey(newKey)
-    if (typeof window !== "undefined") {
-      localStorage.setItem("projectFilterKey", newKey)
-    }
+    session?.setItem("projectFilterKey", newKey)
   }
 
   const handleChildCategoryClick = key => () => {
     setFilterKey(key)
-    if (typeof window !== "undefined") {
-      localStorage.setItem("projectFilterKey", key)
-    }
+    session?.setItem("projectFilterKey", key)
   }
 
   const data = useStaticQuery(graphql`
@@ -147,9 +155,6 @@ const IsoGrid = () => {
                   }
                 }
               }
-            }
-            propertyInfo {
-              propertyLocation
             }
           }
         }
@@ -229,13 +234,10 @@ const IsoGrid = () => {
       <ul ref={containerRef} className="filter-container">
         {propertyMap.map(({ node: property }) => {
           const fallbackImage = "https://via.placeholder.com/800x400"
-          const hoverImage = property.propertyInfo.secondaryImage?.localFile
-            ?.childImageSharp?.gatsbyImageData
-            ? getSrc(
-                property.propertyInfo.secondaryImage.localFile.childImageSharp
-                  .gatsbyImageData
-              )
-            : fallbackImage
+          const secondaryData =
+            property.propertyInfo?.secondaryImage?.localFile?.childImageSharp
+              ?.gatsbyImageData
+          const hoverImage = secondaryData ? getSrc(secondaryData) : fallbackImage
 
           return (
             <Link
@@ -265,7 +267,7 @@ const IsoGrid = () => {
                 </div>
                 <div className="info">
                   <h3>{property.title} -</h3>
-                  <p>{property.propertyInfo.propertyLocation}</p>
+                  <p>{property.propertyInfo?.propertyLocation}</p>
                 </div>
               </div>
             </Link>
