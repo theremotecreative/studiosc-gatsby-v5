@@ -35,15 +35,21 @@ const IsoGrid = () => {
       isotope.current = iso
 
       // MIGRATION: clear any old persisted filter that lived in localStorage
-      try {
-        window.localStorage?.removeItem("projectFilterKey")
-      } catch {}
+      try { window.localStorage?.removeItem("projectFilterKey") } catch {}
 
-      // Restore saved filter from this session only
-      const saved = session?.getItem("projectFilterKey")
-      if (saved) {
-        setFilterKey(saved)
-        setParentCategory(saved === "*" ? null : saved)
+      // Restore ONLY if returning from a detail page in this tab/session
+      const shouldPersist = session?.getItem("persistProjectFilter") === "1"
+      if (shouldPersist) {
+        const saved = session?.getItem("projectFilterKey")
+        if (saved) {
+          setFilterKey(saved)
+          setParentCategory(saved === "*" ? null : saved)
+        }
+      } else {
+        // Fresh visit: clear and default to All
+        session?.removeItem("projectFilterKey")
+        setFilterKey("*")
+        setParentCategory(null)
       }
 
       // wait for images, then layout
@@ -52,27 +58,24 @@ const IsoGrid = () => {
     })()
 
     return () => {
-      try {
-        imgLoad && imgLoad.off("always")
-      } catch {}
-      try {
-        iso && iso.destroy()
-      } catch {}
+      try { imgLoad && imgLoad.off("always") } catch {}
+      try { iso && iso.destroy() } catch {}
     }
   }, [])
 
-  // Listen for route changes (browser only)
+  // Listen for route changes (SPA nav only)
   useEffect(() => {
     if (typeof window === "undefined") return
     const unlisten = globalHistory.listen(({ location }) => {
       const isLeavingProjects = !location.pathname.startsWith("/projects/")
       if (isLeavingProjects) {
-        // Leaving the grid entirely: forget the filter for a fresh next visit
+        // Leaving the grid: forget everything so next visit is fresh
+        session?.removeItem("persistProjectFilter")
         session?.removeItem("projectFilterKey")
         setFilterKey("*")
         setParentCategory(null)
       } else {
-        // Returning to /projects within the same session: restore
+        // Returning to /projects in the same session: restore if present
         const saved = session?.getItem("projectFilterKey") || "*"
         setFilterKey(saved)
         setParentCategory(saved === "*" ? null : saved)
@@ -83,19 +86,15 @@ const IsoGrid = () => {
 
   // Apply filter to Isotope
   useEffect(() => {
-    if (isotope.current) {
-      isotope.current.arrange({
-        filter: filterKey === "*" ? "*" : `.${filterKey}`,
-      })
-    }
+    isotope.current?.arrange({
+      filter: filterKey === "*" ? "*" : `.${filterKey}`,
+    })
   }, [filterKey])
 
   // Move/show the size submenu
   useEffect(() => {
     if (typeof document === "undefined") return
-    const developmentItem = document.querySelector(
-      ".project-cats > li:nth-child(2)"
-    )
+    const developmentItem = document.querySelector(".project-cats > li:nth-child(2)")
     const sizeSubMenu = document.querySelector(".size-cats")
     if (parentCategory === "development" && developmentItem && sizeSubMenu) {
       developmentItem.appendChild(sizeSubMenu)
@@ -110,11 +109,13 @@ const IsoGrid = () => {
     setParentCategory(newKey === "*" ? null : newKey)
     setFilterKey(newKey)
     session?.setItem("projectFilterKey", newKey)
+    // note: we DO NOT set persist flag here; only when navigating to a detail page
   }
 
   const handleChildCategoryClick = key => () => {
     setFilterKey(key)
     session?.setItem("projectFilterKey", key)
+    // note: same as above; no persist flag yet
   }
 
   const data = useStaticQuery(graphql`
@@ -124,11 +125,7 @@ const IsoGrid = () => {
           node {
             title
             slug
-            categories {
-              nodes {
-                slug
-              }
-            }
+            categories { nodes { slug } }
             featuredImage {
               node {
                 localFile {
@@ -167,103 +164,47 @@ const IsoGrid = () => {
   return (
     <GridMain>
       <ul className="project-cats">
-        <li
-          className={filterKey === "*" ? "active" : ""}
-          onClick={handleParentCategoryClick("*")}
-        >
-          All
-        </li>
-        <li
-          className={filterKey === "development" ? "active" : ""}
-          onClick={handleParentCategoryClick("development")}
-        >
-          Development
-        </li>
+        <li className={filterKey === "*" ? "active" : ""} onClick={handleParentCategoryClick("*")}>All</li>
+        <li className={filterKey === "development" ? "active" : ""} onClick={handleParentCategoryClick("development")}>Development</li>
         <ul className="size-cats">
-          <li
-            className={filterKey === "s" ? "active" : ""}
-            onClick={handleChildCategoryClick("s")}
-          >
-            S
-          </li>
-          <li
-            className={filterKey === "m" ? "active" : ""}
-            onClick={handleChildCategoryClick("m")}
-          >
-            M
-          </li>
-          <li
-            className={filterKey === "l" ? "active" : ""}
-            onClick={handleChildCategoryClick("l")}
-          >
-            L
-          </li>
-          <li
-            className={filterKey === "xl-interiors" ? "active" : ""}
-            onClick={handleChildCategoryClick("xl-interiors")}
-          >
-            XL-INTERIORS
-          </li>
+          <li className={filterKey === "s" ? "active" : ""} onClick={handleChildCategoryClick("s")}>S</li>
+          <li className={filterKey === "m" ? "active" : ""} onClick={handleChildCategoryClick("m")}>M</li>
+          <li className={filterKey === "l" ? "active" : ""} onClick={handleChildCategoryClick("l")}>L</li>
+          <li className={filterKey === "xl-interiors" ? "active" : ""} onClick={handleChildCategoryClick("xl-interiors")}>XL-INTERIORS</li>
         </ul>
-        <li
-          className={filterKey === "residential" ? "active" : ""}
-          onClick={handleParentCategoryClick("residential")}
-        >
-          Residential
-        </li>
-        <li
-          className={filterKey === "office" ? "active" : ""}
-          onClick={handleParentCategoryClick("office")}
-        >
-          Office
-        </li>
-        <li
-          className={filterKey === "civic" ? "active" : ""}
-          onClick={handleParentCategoryClick("civic")}
-        >
-          Civic
-        </li>
-        <li
-          className={filterKey === "commerce" ? "active" : ""}
-          onClick={handleParentCategoryClick("commerce")}
-        >
-          Commerce
-        </li>
+        <li className={filterKey === "residential" ? "active" : ""} onClick={handleParentCategoryClick("residential")}>Residential</li>
+        <li className={filterKey === "office" ? "active" : ""} onClick={handleParentCategoryClick("office")}>Office</li>
+        <li className={filterKey === "civic" ? "active" : ""} onClick={handleParentCategoryClick("civic")}>Civic</li>
+        <li className={filterKey === "commerce" ? "active" : ""} onClick={handleParentCategoryClick("commerce")}>Commerce</li>
       </ul>
 
       <ul ref={containerRef} className="filter-container">
         {propertyMap.map(({ node: property }) => {
-          const fallbackImage = "https://via.placeholder.com/800x400"
-          const secondaryData =
-            property.propertyInfo?.secondaryImage?.localFile?.childImageSharp
-              ?.gatsbyImageData
-          const hoverImage = secondaryData ? getSrc(secondaryData) : fallbackImage
+          const cats = property.categories?.nodes?.map(c => c.slug).join(" ") || ""
+          const mainImg = property.featuredImage?.node?.localFile?.childImageSharp?.gatsbyImageData
+          const hoverData = property.propertyInfo?.secondaryImage?.localFile?.childImageSharp?.gatsbyImageData
+          const hoverImage = hoverData ? getSrc(hoverData) : "https://via.placeholder.com/800x400"
 
           return (
             <Link
               to={`/projects/${property.slug}`}
               key={property.slug}
-              className={`filter-item ${property.categories.nodes
-                .map(c => c.slug)
-                .join(" ")}`}
+              className={`filter-item ${cats}`}
+              onClick={() => {
+                // Set the flag ONLY when navigating to a detail page
+                session?.setItem("persistProjectFilter", "1")
+              }}
             >
               <div className="property-container">
                 <div className="image-container">
-                  {property.featuredImage?.node?.localFile?.childImageSharp
-                    ?.gatsbyImageData && (
+                  {mainImg && (
                     <GatsbyImage
                       className="featured-image"
-                      image={
-                        property.featuredImage.node.localFile.childImageSharp
-                          .gatsbyImageData
-                      }
+                      image={mainImg}
                       alt={property.title || "Project Image"}
                     />
                   )}
-                  <div
-                    className="hover-image"
-                    style={{ backgroundImage: `url(${hoverImage})` }}
-                  />
+                  <div className="hover-image" style={{ backgroundImage: `url(${hoverImage})` }} />
                 </div>
                 <div className="info">
                   <h3>{property.title} -</h3>
@@ -279,7 +220,7 @@ const IsoGrid = () => {
 }
 
 const GridMain = styled.section`
-  /* ... (same styling as before) ... */
+  /* your existing styles stay the same */
   max-width: 100%;
   padding: 0 30px;
 
@@ -444,9 +385,7 @@ const GridMain = styled.section`
     }
 
     @media (max-width: 1200px) {
-      .filter-item {
-        width: 50%;
-      }
+      .filter-item { width: 50%; }
     }
 
     @media (max-width: 767px) {
@@ -455,24 +394,13 @@ const GridMain = styled.section`
         height: 330px;
         left: 0 !important;
 
-        .property-container {
-          .image-container {
-            height: 270px;
-          }
-        }
-
-        .gatsby-image-wrapper {
-          opacity: 1 !important;
-        }
+        .property-container .image-container { height: 270px; }
+        .gatsby-image-wrapper { opacity: 1 !important; }
 
         a {
           opacity: 1 !important;
           color: #fff !important;
           background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        h3 {
-          /* color: #fff !important; */
         }
       }
     }
